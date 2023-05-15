@@ -12,14 +12,14 @@ import threading
 
 class Logger:
     def __init__(self):
-        self.f = open("/home/ldd/msckf_vio/src/msckf_vio/path/record_2_2.txt", 'w')
+        self.f = open("/home/ldd/msckf_real/src/msckf_vio/path/record_5.txt", 'w')
         self.msckf_pose = [str(0),str(0),str(0),str(0),str(0),str(0), str(0)]
         self.opti_pose = [str(0),str(0),str(0),str(0),str(0),str(0), str(0)]
         
         self.start_time = 0 
         self.cur_time = 0
         rospy.Subscriber("/firefly_sbx/vio/odom", Odometry,self.msckf_Cb)
-        rospy.Subscriber("/vrpn_client_node/liudandi/pose",PoseStamped,self.opti_Cb)
+        rospy.Subscriber("/vrpn_client_node/jiahao3/pose",PoseStamped,self.opti_Cb)
         
         self.add_thread = threading.Thread(target = self.thread_job)
         self.add_thread.start()
@@ -45,7 +45,7 @@ class Logger:
 
     def msckf_Cb(self,msg):
         self.msckf_pose = [str(msg.pose.pose.position.x), str(msg.pose.pose.position.y), str(msg.pose.pose.position.z), str(msg.pose.pose.orientation.x),str(msg.pose.pose.orientation.y),str(msg.pose.pose.orientation.z), str(msg.pose.pose.orientation.w)]
-        print(str(msg.pose.pose.orientation.x),str(msg.pose.pose.orientation.y),str(msg.pose.pose.orientation.z), str(msg.pose.pose.orientation.w))
+        # print(str(msg.pose.pose.orientation.x),str(msg.pose.pose.orientation.y),str(msg.pose.pose.orientation.z), str(msg.pose.pose.orientation.w))
 def main():
     print("start record!")
     rospy.init_node('record_node', anonymous=True)

@@ -26,7 +26,7 @@ def main():
     
     file_name = "record_2.txt"
     save_name = "record_2.png"
-    read_path = "/home/ldd/msckf_vio/src/msckf_vio/path/" + file_name
+    read_path = "/home/ldd/msckf_real/src/msckf_vio/path/" + file_name
     data = np.loadtxt(read_path, delimiter=',', skiprows=1)
     fig, ax = plt.subplots(2, 3)
     first_index = 0
@@ -34,12 +34,10 @@ def main():
         if data[i,1] and data[i,7]:
             first_index = i
             break
-        else:
-            continue
-    
+    print(first_index)
     T_gt0_w = np.identity(4)
     euler = [data[first_index, 10],data[first_index, 11], data[first_index, 12]] # zyx
-    print(euler)
+    
     r = R.from_euler('zyx',euler, degrees=True)
     
     T_gt0_w[:3, :3] = r.as_matrix()
@@ -49,13 +47,13 @@ def main():
     
     matrix = R.from_matrix(T_gt0_w[:3, :3])
     euler_gt = matrix.as_euler('zyx', degrees=True)
-    print(euler_gt)
+    # print(euler_gt)
     
     T_gt_w = np.identity(4)
     T_imu_imu0 = np.identity(4)
     
     T_imu0_gt0 = np.identity(4)
-    T_imu0_gt0[1,1] = -1
+    # T_imu0_gt0[1,1] = -1
     T_imu0_gt0[2,2] = -1
     
     gt = []
@@ -87,7 +85,8 @@ def main():
     gt = np.array(gt)
     
     ax[0][0].plot(data[first_index:,0], imu[:,0], 'b-', label = "msckf")
-    ax[0][1].plot(data[first_index:,0], -imu[:,1], 'b-')
+    # ax[0][1].plot(data[first_index:,0], -imu[:,1], 'b-')
+    ax[0][1].plot(data[first_index:,0], imu[:,1], 'b-')
     ax[0][2].plot(data[first_index:,0], imu[:,2], 'b-')
 
     ax[0][0].plot(data[first_index:,0], gt[:,0], 'r-', label = "opti")
@@ -95,8 +94,10 @@ def main():
     ax[0][2].plot(data[first_index:,0], gt[:,2], 'r-')
     
     ax[1][0].plot(data[first_index:,0], imu[:,5], 'b-')
-    ax[1][1].plot(data[first_index:,0], -imu[:,4], 'b-')
-    ax[1][2].plot(data[first_index:,0], -imu[:,3], 'b-')
+    # ax[1][1].plot(data[first_index:,0], -imu[:,4], 'b-')
+    # ax[1][2].plot(data[first_index:,0], -imu[:,3], 'b-')
+    ax[1][1].plot(data[first_index:,0], imu[:,4], 'b-')
+    ax[1][2].plot(data[first_index:,0], imu[:,3], 'b-')
 
     ax[1][0].plot(data[first_index:,0], gt[:,5], 'r-')
     ax[1][1].plot(data[first_index:,0], gt[:,4], 'r-')

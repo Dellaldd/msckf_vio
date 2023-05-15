@@ -4,7 +4,7 @@ project(msckf_vio CXX)
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
-
+# set(CMAKE_BUILD_TYPE Release)
 add_compile_options(-std=c++14)
 
 # Modify cmake module path if new .cmake files are required
