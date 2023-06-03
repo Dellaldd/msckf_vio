@@ -46,6 +46,7 @@ class Logger:
     def msckf_Cb(self,msg):
         self.msckf_pose = [str(msg.pose.pose.position.x), str(msg.pose.pose.position.y), str(msg.pose.pose.position.z), str(msg.pose.pose.orientation.x),str(msg.pose.pose.orientation.y),str(msg.pose.pose.orientation.z), str(msg.pose.pose.orientation.w)]
         # print(str(msg.pose.pose.orientation.x),str(msg.pose.pose.orientation.y),str(msg.pose.pose.orientation.z), str(msg.pose.pose.orientation.w))
+
 def main():
     print("start record!")
     rospy.init_node('record_node', anonymous=True)

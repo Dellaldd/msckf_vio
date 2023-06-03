@@ -58,6 +58,37 @@ MsckfVio::MsckfVio(ros::NodeHandle& pnh):
 }
 
 bool MsckfVio::loadParameters() {
+
+
+  // gt
+    ifstream ifs_gt;
+    string gt_path_full = "/home/ldd/euroc/V1_01_easy/mav0/state_groundtruth_estimate0/V1_01_easy.txt";
+    ifs_gt.open(gt_path_full, ios::in);  //读取文件
+    if(!ifs_gt.is_open())
+    {
+        cout << "gt ifstream open file error!\n";
+    }
+    string line_gt;
+    vector<string> lines_gt;
+    while(getline(ifs_gt, line_gt))    
+        lines_gt.push_back(line_gt);   
+    ifs_gt.close();
+    Gt gt_pose;
+    string s_gt = " ";
+    vector<std::string> vec_gt;
+
+    // openvins gt
+    for(int i=1; i<lines_gt.size(); ++i){
+        vec_gt = split_vec(lines_gt[i],s_gt);
+        gt_pose.time = std::stold(vec_gt[0]);
+        gt_pose.p << std::stod(vec_gt[1]), std::stod(vec_gt[2]), std::stod(vec_gt[3]);
+        gt_pose.q.x() = std::stod(vec_gt[4]);
+        gt_pose.q.y() = std::stod(vec_gt[5]);
+        gt_pose.q.z() = std::stod(vec_gt[6]);
+        gt_pose.q.w() = std::stod(vec_gt[7]);
+        gt_poses.push_back(gt_pose);
+    }
+
   // Frame id
   nh.param<string>("fixed_frame_id", fixed_frame_id, "world");
   nh.param<string>("child_frame_id", child_frame_id, "robot");
@@ -238,48 +269,60 @@ void MsckfVio::imuCallback(
   if (!is_gravity_set) {
     if (imu_msg_buffer.size() < 200) return;
     //if (imu_msg_buffer.size() < 10) return;
-    initializeGravityAndBias();
+    initializeGravityAndBias(msg);
     is_gravity_set = true;
   }
 
   return;
 }
 
-void MsckfVio::initializeGravityAndBias() {
+void MsckfVio::initializeGravityAndBias(const sensor_msgs::ImuConstPtr& msg) {
 
-  // Initialize gravity and gyro bias.
-  Vector3d sum_angular_vel = Vector3d::Zero();
-  Vector3d sum_linear_acc = Vector3d::Zero();
+  // // Initialize gravity and gyro bias.
+  // Vector3d sum_angular_vel = Vector3d::Zero();
+  // Vector3d sum_linear_acc = Vector3d::Zero();
 
-  for (const auto& imu_msg : imu_msg_buffer) {
-    Vector3d angular_vel = Vector3d::Zero();
-    Vector3d linear_acc = Vector3d::Zero();
+  // for (const auto& imu_msg : imu_msg_buffer) {
+  //   Vector3d angular_vel = Vector3d::Zero();
+  //   Vector3d linear_acc = Vector3d::Zero();
 
-    tf::vectorMsgToEigen(imu_msg.angular_velocity, angular_vel);
-    tf::vectorMsgToEigen(imu_msg.linear_acceleration, linear_acc);
+  //   tf::vectorMsgToEigen(imu_msg.angular_velocity, angular_vel);
+  //   tf::vectorMsgToEigen(imu_msg.linear_acceleration, linear_acc);
 
-    sum_angular_vel += angular_vel;
-    sum_linear_acc += linear_acc;
-  }
+  //   sum_angular_vel += angular_vel;
+  //   sum_linear_acc += linear_acc;
+  // }
 
-  state_server.imu_state.gyro_bias =
-    sum_angular_vel / imu_msg_buffer.size();
-  //IMUState::gravity =
-  //  -sum_linear_acc / imu_msg_buffer.size();
-  // This is the gravity in the IMU frame.
-  Vector3d gravity_imu =
-    sum_linear_acc / imu_msg_buffer.size();
+  // state_server.imu_state.gyro_bias =
+  //   sum_angular_vel / imu_msg_buffer.size();
+  // //IMUState::gravity =
+  // //  -sum_linear_acc / imu_msg_buffer.size();
+  // // This is the gravity in the IMU frame.
+  // Vector3d gravity_imu =
+  //   sum_linear_acc / imu_msg_buffer.size();
 
-  // Initialize the initial orientation, so that the estimation
-  // is consistent with the inertial frame.
-  double gravity_norm = gravity_imu.norm();
-  IMUState::gravity = Vector3d(0.0, 0.0, -gravity_norm);
+  // // Initialize the initial orientation, so that the estimation
+  // // is consistent with the inertial frame.
+  // double gravity_norm = gravity_imu.norm();
+  // IMUState::gravity = Vector3d(0.0, 0.0, -gravity_norm);
 
-  Quaterniond q0_i_w = Quaterniond::FromTwoVectors(
-    gravity_imu, -IMUState::gravity);
+  // Quaterniond q0_i_w = Quaterniond::FromTwoVectors(
+  //   gravity_imu, -IMUState::gravity);
+  // state_server.imu_state.orientation =
+  //   rotationToQuaternion(q0_i_w.toRotationMatrix().transpose());
+  double time = msg->header.stamp.toSec();
+  while(gt_num < gt_poses.size()){
+        if (gt_poses[gt_num].time < time){
+            gt_num ++;
+        }else{
+            break;
+        }   
+    }
+    gt_init = gt_num; 
+  
   state_server.imu_state.orientation =
-    rotationToQuaternion(q0_i_w.toRotationMatrix().transpose());
-
+    rotationToQuaternion(gt_poses[gt_init].q.toRotationMatrix().cast<double>().transpose()); //T_w_imu
+  state_server.imu_state.position = gt_poses[gt_init].p.cast<double>(); //p_imu_w
   return;
 }
 
@@ -422,12 +465,6 @@ void MsckfVio::featureCallback(
     ++critical_time_cntr;
     ROS_INFO("\033[1;31mTotal processing time %f/%d...\033[0m",
         processing_time, critical_time_cntr);
-    //printf("IMU processing time: %f/%f\n",
-    //    imu_processing_time, imu_processing_time/processing_time);
-    //printf("State augmentation time: %f/%f\n",
-    //    state_augmentation_time, state_augmentation_time/processing_time);
-    //printf("Add observations time: %f/%f\n",
-    //    add_observations_time, add_observations_time/processing_time);
     printf("Remove lost features time: %f/%f\n",
         remove_lost_features_time, remove_lost_features_time/processing_time);
     printf("Remove camera states time: %f/%f\n",
@@ -688,7 +725,20 @@ void MsckfVio::predictNewState(const double& dt,
   quaternionNormalize(q);
   v = v + dt/6*(k1_v_dot+2*k2_v_dot+2*k3_v_dot+k4_v_dot);
   p = p + dt/6*(k1_p_dot+2*k2_p_dot+2*k3_p_dot+k4_p_dot);
+  // Isometry3d T_imu_w = Isometry3d::Identity();
+  // T_imu_imu0 = Isometry3d::Identity();
 
+  // T_imu_w.linear() = quaternionToRotation(
+  //     state_server.imu_state.orientation).transpose();
+  // T_imu_w.translation() = state_server.imu_state.position;
+  // T_imu_imu0 = T_imu0_w.inverse() * T_imu_w;
+
+  // Vector4d quat = rotationToQuaternion(T_imu_w.linear());
+  // Vector3d t((T_imu_w.translation()));
+  // imu.resize(7);
+  // imu.segment(0, 3) = t;
+  // imu.segment(3, 4) = quat;
+  // cout << "imu: " << imu << endl;
   return;
 }
 
@@ -1440,7 +1490,27 @@ void MsckfVio::publish(const ros::Time& time) {
   feature_msg_ptr->width = feature_msg_ptr->points.size();
 
   feature_pub.publish(feature_msg_ptr);
+  
+  // gt publish
+  Isometry3d gt = Isometry3d::Identity();
+  while(gt_num < gt_poses.size()){
+    if (gt_poses[gt_num].time <= state_server.imu_state.time){
+        gt_num ++;
+    }else{
+        gt.translation() = gt_poses[gt_num].p;
+        gt.linear() = gt_poses[gt_num].q.toRotationMatrix();
+        break;
+    }
+  }
+  cout << "gt time: " << gt_poses[gt_num].time << "imu time: "<< state_server.imu_state.time << "current gt num: " << gt_num << endl;
 
+  nav_msgs::Odometry odom_gt;
+  odom_gt.header.stamp = time;
+  odom_gt.header.frame_id = fixed_frame_id;
+  odom_gt.child_frame_id = child_frame_id;
+
+  tf::poseEigenToMsg(gt, odom_gt.pose.pose);
+  mocap_odom_pub.publish(odom_gt);
   return;
 }
 

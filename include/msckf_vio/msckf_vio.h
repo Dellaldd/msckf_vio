@@ -114,7 +114,7 @@ class MsckfVio {
      *    Initialize the IMU bias and initial orientation
      *    based on the first few IMU readings.
      */
-    void initializeGravityAndBias();
+void initializeGravityAndBias(const sensor_msgs::ImuConstPtr& msg);
 
     /*
      * @biref resetCallback
@@ -231,7 +231,10 @@ class MsckfVio {
     ros::Subscriber mocap_odom_sub;
     ros::Publisher mocap_odom_pub;
     geometry_msgs::TransformStamped raw_mocap_odom_msg;
-    Eigen::Isometry3d mocap_initial_frame;
+    Eigen::Isometry3d mocap_initial_frame, T_imu0_w, T_imu_imu0;
+    std::vector<Gt> gt_poses;
+    int gt_num = 0, gt_init = 0;
+    
 };
 
 typedef MsckfVio::Ptr MsckfVioPtr;

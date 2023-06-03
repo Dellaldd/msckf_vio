@@ -433,6 +433,7 @@ bool Feature::initializePosition(
   if (is_valid_solution)
     is_initialized = true;
 
+  // std::cout << "feature position: " << position << std::endl;
   return is_valid_solution;
 }
 } // namespace msckf_vio

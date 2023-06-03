@@ -10,6 +10,9 @@
 
 #include <cmath>
 #include <Eigen/Dense>
+#include<vector>
+#include "boost/regex.hpp"
+
 
 namespace msckf_vio {
 
@@ -86,6 +89,20 @@ inline Eigen::Vector4d smallAngleQuaternion(
   }
 
   return q;
+}
+
+inline std::vector<std::string> split_vec(std::string str,std::string s)
+{
+    boost::regex reg(s.c_str());
+    
+    std::vector<std::string> vec;
+    boost::sregex_token_iterator it(str.begin(),str.end(),reg,-1);
+    boost::sregex_token_iterator end;
+    while(it!=end)
+    {
+        vec.push_back(*it++);
+    }
+    return vec;
 }
 
 /*
