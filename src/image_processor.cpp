@@ -1257,7 +1257,7 @@ void ImageProcessor::publish() {
       curr_cam1_points, cam1_intrinsics, cam1_distortion_model,
       cam1_distortion_coeffs, curr_cam1_points_undistorted);
   
-  cout << "curr_cam0_points_undistorted:" << curr_cam0_points_undistorted[0] << endl;
+  // cout << "curr_cam0_points_undistorted:" << curr_cam0_points_undistorted[0] << endl;
 
   for (int i = 0; i < curr_ids.size(); ++i) {
     feature_msg_ptr->features.push_back(FeatureMeasurement());

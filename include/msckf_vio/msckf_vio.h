@@ -26,6 +26,17 @@
 #include "cam_state.h"
 #include "feature.hpp"
 #include <msckf_vio/CameraMeasurement.h>
+#include <opencv2/opencv.hpp>
+#include <opencv2/calib3d.hpp>
+#include <opencv2/video.hpp>
+#include <g2o/core/base_vertex.h>
+#include <g2o/core/base_unary_edge.h>
+#include <g2o/core/sparse_optimizer.h>
+#include <g2o/core/block_solver.h>
+#include <g2o/core/solver.h>
+#include <g2o/core/optimization_algorithm_gauss_newton.h>
+#include <g2o/solvers/dense/linear_solver_dense.h>
+#include <sophus/se3.hpp>
 
 namespace msckf_vio {
 /*
@@ -70,10 +81,15 @@ class MsckfVio {
     struct StateServer {
       IMUState imu_state;
       CamStateServer cam_states;
-
+      CAMState cur_cam_state;
       // State covariance matrix
       Eigen::MatrixXd state_cov;
       Eigen::Matrix<double, 12, 12> continuous_noise_cov;
+    };
+
+    struct WindowsServer {
+      std::vector<IMUState> imu_states;
+      std::vector<CAMState> cam_states;
     };
 
 
@@ -162,6 +178,29 @@ void initializeGravityAndBias(const sensor_msgs::ImuConstPtr& msg);
     void pruneCamStateBuffer();
     // Reset the system online if the uncertainty is too large.
     void onlineReset();
+    
+    // get 3d position
+    void get_position();
+
+    // vml
+    void vml();
+
+    void triangulate();
+
+    void bundleAdjustmentGaussNewton(
+        const std::vector<Eigen::Vector3d> &points_3d,
+        const std::vector<Eigen::Vector2d> &points_2d,
+        const cv::Matx33d &K,
+        Sophus::SE3d &pose);
+
+    
+    // distortpoints
+    std::vector<cv::Point2d> distortPoints(
+    const std::vector<cv::Point2d>& pts_in,
+    const cv::Matx33d& K,
+    const std::string& distortion_model,
+    const cv::Vec4d& distortion_coeffs);
+
 
     // Chi squared test table.
     static std::map<int, double> chi_squared_test_table;
@@ -229,11 +268,16 @@ void initializeGravityAndBias(const sensor_msgs::ImuConstPtr& msg);
         const nav_msgs::OdometryConstPtr& msg);
 
     ros::Subscriber mocap_odom_sub;
-    ros::Publisher mocap_odom_pub;
+    ros::Publisher mocap_odom_pub, cam_odom_pub;
     geometry_msgs::TransformStamped raw_mocap_odom_msg;
-    Eigen::Isometry3d mocap_initial_frame, T_imu0_w, T_imu_imu0;
+    Eigen::Isometry3d mocap_initial_frame;
     std::vector<Gt> gt_poses;
     int gt_num = 0, gt_init = 0;
+    cv::Matx33d K;
+
+    cv::Vec4d cam0_distortion_coeffs;
+    std::string cam0_distortion_model;
+    WindowsServer windows_states;
     
 };
 

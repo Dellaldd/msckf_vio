@@ -8,7 +8,7 @@ set(CMAKE_BUILD_TYPE Release)
 # add_compile_options(-std=c++14)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-# set(CMAKE_BUILD_TYPE "Debug")
+set(CMAKE_BUILD_TYPE "Debug")
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pipe -std=c++17 -O3")
@@ -17,6 +17,16 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -fpic")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -fpic")
 
 set(CMAKE_CXX_STANDARD 14) 
+
+
+if (POLICY CMP0072)
+  set(OpenGL_GL_PREFERENCE LEGACY)
+endif()
+
+LIST(APPEND CMAKE_MODULE_PATH /home/ldd/package/g2o/cmake_modules)
+SET(G2O_ROOT /home/ldd/package/g2o/)
+set(Sophus_DIR "/home/ldd/package/Sophus/build")
+find_package(g2o REQUIRED)
 
 # Modify cmake module path if new .cmake files are required
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/cmake")
@@ -39,6 +49,7 @@ find_package(catkin REQUIRED COMPONENTS
   pcl_conversions
   pcl_ros
   std_srvs
+  Sophus REQUIRED
 )
 
 ## System dependencies are found with CMake's conventions
@@ -88,6 +99,7 @@ include_directories(
   ${Boost_INCLUDE_DIR}
   ${OpenCV_INCLUDE_DIRS}
   ${SUITESPARSE_INCLUDE_DIRS}
+  ${Sophus_INCLUDE_DIRS}
 )
 
 # Msckf Vio
@@ -102,6 +114,7 @@ add_dependencies(msckf_vio
 target_link_libraries(msckf_vio
   ${catkin_LIBRARIES}
   ${SUITESPARSE_LIBRARIES}
+  g2o_core g2o_stuff
 )
 
 # Msckf Vio nodelet
@@ -115,6 +128,7 @@ add_dependencies(msckf_vio_nodelet
 target_link_libraries(msckf_vio_nodelet
   msckf_vio
   ${catkin_LIBRARIES}
+  g2o_core g2o_stuff
 )
 
 # Image processor
@@ -129,6 +143,7 @@ add_dependencies(image_processor
 target_link_libraries(image_processor
   ${catkin_LIBRARIES}
   ${OpenCV_LIBRARIES}
+  g2o_core g2o_stuff
 )
 
 # Image processor nodelet
@@ -142,6 +157,7 @@ add_dependencies(image_processor_nodelet
 target_link_libraries(image_processor_nodelet
   image_processor
   ${catkin_LIBRARIES}
+  g2o_core g2o_stuff
 )
 
 #############

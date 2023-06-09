@@ -20,6 +20,11 @@
 #include "imu_state.h"
 #include "cam_state.h"
 
+#include <opencv2/opencv.hpp>
+#include <opencv2/video.hpp>
+
+using namespace std;
+
 namespace msckf_vio {
 
 /*
@@ -153,6 +158,8 @@ struct Feature {
 
   // Noise for a normalized feature measurement.
   static double observation_noise;
+  static Eigen::Matrix<double, 3, 4> K0;
+  
 
   // Optimization configuration for solving the 3d position.
   static OptimizationConfig optimization_config;
@@ -226,24 +233,124 @@ void Feature::jacobian(const Eigen::Isometry3d& T_c0_ci,
 }
 
 void Feature::generateInitialGuess(
-    const Eigen::Isometry3d& T_c1_c2, const Eigen::Vector2d& z1,
+    const Eigen::Isometry3d& T_c_c0, const Eigen::Vector2d& z1,
     const Eigen::Vector2d& z2, Eigen::Vector3d& p) const {
+  
+  cv::Matx33d K0(458.654, 0.0, 367.215, 0.0, 457.296, 248.375, 0.0, 0.0, 1.0);
+  // 457.587, 456.134, 379.999, 255.238
+  cv::Matx33d K1(457.587, 0.0, 379.999, 0.0, 456.134, 255.238, 0.0, 0.0, 1.0);
+  std::vector<cv::Point2d> pts_in, pts_out;
+  pts_in.push_back(cv::Point2d(z1[0], z1[1]));
+  pts_in.push_back(cv::Point2d(z2[0], z2[1]));
+
+  cv::Vec4d distortion_coeffs(-0.28340811, 0.07395907, 0.00019359, 1.76187114e-05);
+
+  std::vector<cv::Point3d> homogenous_pts;
+  cv::convertPointsToHomogeneous(pts_in, homogenous_pts);
+  cv::projectPoints(homogenous_pts, cv::Vec3d::zeros(), cv::Vec3d::zeros(), K0,
+                    distortion_coeffs, pts_out);
+  
+  cv::Point2d c0_point, c_point;
+  c0_point = pts_out[0];
+  c_point = pts_out[0];
+
+  cv::Mat T0, T1, P1, P2;
+  T0 = (cv::Mat_<double>(3, 4) << 
+        1,0,0,0,
+        0,1,0,0,
+        0,0,1,0); 
+  cv::Mat x3D;
+  P1 = K0 * T0;
+  Eigen::Isometry3d T_12 = T_c_c0.inverse();
+  T1 = (cv::Mat_<double>(3, 4) <<
+      T_12.linear()(0,0), T_12.linear()(0,1), T_12.linear()(0,2), T_12.translation()(0),
+      T_12.linear()(1,0), T_12.linear()(1,1), T_12.linear()(1,2), T_12.translation()(1),
+      T_12.linear()(2,0), T_12.linear()(2,1), T_12.linear()(2,2), T_12.translation()(2));
+  
+  cv::Matx34d T_1_matx((double*)T1.ptr());
+  P2 = K1 * T1;
+
+  //orb-slam
+  cv::Mat A = cv::Mat_<double>(4, 4);
+  cv::Mat x;
+  x = c0_point.x*P1.row(2)-P1.row(0);
+  x.copyTo(A.row(0));
+
+  x = c0_point.y*P1.row(2)-P1.row(1);
+  x.copyTo(A.row(1));
+  
+  x = c_point.x*P2.row(2)-P2.row(0);
+  x.copyTo(A.row(2));
+
+  x = c_point.y*P2.row(2)-P2.row(1);
+  x.copyTo(A.row(3));
+
+  // std::cout << "A:" << A << std::endl;
+  cv::Mat u,w,vt;
+
+  cv::SVD::compute(A,w,u,vt,cv::SVD::MODIFY_A| cv::SVD::FULL_UV);
+  x3D = vt.row(3).t();
+  x3D = x3D.rowRange(0,3)/x3D.at<double>(3);
+  // std::cout << "x3D:" << x3D << std::endl;
+
+  p[0] = x3D.at<double>(0,0);
+  p[1] = x3D.at<double>(1,0);
+  p[2] = x3D.at<double>(2,0);
+  // std::cout << "p:" << p << std::endl;
+
+  // project error
+  cv::Matx41d pw;
+  cv::Matx31d u0, u1, p0, p1;
+  cv::Matx31d zero;
+  zero << 0,0,0;
+  cv::Matx34d K0_extent, K1_extent;
+
+  cv::hconcat(K0, zero, K0_extent);
+  cv::hconcat(K1, zero, K1_extent);
+  
+  cv::Point2d error_0, error_1;
+  
+  pw << p[0], p[1], p[2], 1.;
+  u0 = K0_extent * pw;
+  p0(0,0) = u0(0,0)/u0(2,0);
+  p0(1,0) = u0(1,0)/u0(2,0);
+  error_0 = c0_point - cv::Point2d(p0(0,0),p0(1,0));
+  // std::cout << "p0:" << p0 << std::endl;
+
+  u1 = K1 * T_1_matx * pw;
+  p1(0,0) = u1(0,0)/u1(2,0);
+  p1(1,0) = u1(1,0)/u1(2,0);
+  error_1 = c_point - cv::Point2d(p1(0,0),p1(1,0));
+  // std::cout << "p1:" << p1 << std::endl;
+
+  float rmse_0 = 0, rmse_1 = 0;
+  rmse_0 += (error_0.x*error_0.x + error_0.y*error_0.y);
+  
+  rmse_1 += (error_1.x*error_1.x + error_1.y*error_1.y);
+      
+
+  rmse_0 = std::sqrt(rmse_0);
+  rmse_1 = std::sqrt(rmse_1);
+  cout << "rmse0:" << rmse_0 << endl;
+  cout << "rmse1:" << rmse_1 << endl;
+
+
   // Construct a least square problem to solve the depth.
-  Eigen::Vector3d m = T_c1_c2.linear() * Eigen::Vector3d(z1(0), z1(1), 1.0);
+  // Eigen::Vector3d m = T_c_c0.linear() * Eigen::Vector3d(z1(0), z1(1), 1.0);
 
-  Eigen::Vector2d A(0.0, 0.0);
-  A(0) = m(0) - z2(0)*m(2);
-  A(1) = m(1) - z2(1)*m(2);
+  // Eigen::Vector2d A(0.0, 0.0);
+  // A(0) = m(0) - z2(0)*m(2);
+  // A(1) = m(1) - z2(1)*m(2);
 
-  Eigen::Vector2d b(0.0, 0.0);
-  b(0) = z2(0)*T_c1_c2.translation()(2) - T_c1_c2.translation()(0);
-  b(1) = z2(1)*T_c1_c2.translation()(2) - T_c1_c2.translation()(1);
+  // Eigen::Vector2d b(0.0, 0.0);
+  // b(0) = z2(0)*T_c_c0.translation()(2) - T_c_c0.translation()(0);
+  // b(1) = z2(1)*T_c_c0.translation()(2) - T_c_c0.translation()(1);
 
-  // Solve for the depth.
-  double depth = (A.transpose() * A).inverse() * A.transpose() * b;
-  p(0) = z1(0) * depth;
-  p(1) = z1(1) * depth;
-  p(2) = depth;
+  // // Solve for the depth.
+  // double depth = (A.transpose() * A).inverse() * A.transpose() * b;
+  // p(0) = z1(0) * depth;
+  // p(1) = z1(1) * depth;
+  // p(2) = depth;
   return;
 }
 
@@ -328,16 +435,19 @@ bool Feature::initializePosition(
   // camera frame.
   Eigen::Isometry3d T_c0_w = cam_poses[0];
   for (auto& pose : cam_poses)
-    pose = pose.inverse() * T_c0_w;
+    pose = pose.inverse() * T_c0_w;// T_w_c * T_c0_w = T_c_c0
 
   // Generate initial guess
   Eigen::Vector3d initial_position(0.0, 0.0, 0.0);
   generateInitialGuess(cam_poses[cam_poses.size()-1], measurements[0],
       measurements[measurements.size()-1], initial_position);
+
   Eigen::Vector3d solution(
       initial_position(0)/initial_position(2),
       initial_position(1)/initial_position(2),
-      1.0/initial_position(2));
+      1.0/initial_position(2));  // inverse depth
+
+  // Eigen::Vector3d solution = initial_position;
 
   // Apply Levenberg-Marquart method to solve for the 3d position.
   double lambda = optimization_config.initial_damping;
@@ -406,14 +516,18 @@ bool Feature::initializePosition(
 
     inner_loop_cntr = 0;
 
-  } while (outer_loop_cntr++ <
-      optimization_config.outer_loop_max_iteration &&
+  } while (
       delta_norm > optimization_config.estimation_precision);
+    // }while (outer_loop_cntr++ <
+    //   optimization_config.outer_loop_max_iteration &&
+    //   delta_norm > optimization_config.estimation_precision);
 
   // Covert the feature position from inverse depth
   // representation to its 3d coordinate.
-  Eigen::Vector3d final_position(solution(0)/solution(2),
-      solution(1)/solution(2), 1.0/solution(2));
+  // Eigen::Vector3d final_position(solution(0)/solution(2),
+  //     solution(1)/solution(2), 1.0/solution(2));
+
+  Eigen::Vector3d final_position = initial_position;
 
   // Check if the solution is valid. Make sure the feature
   // is in front of every camera frame observing it.
@@ -426,14 +540,38 @@ bool Feature::initializePosition(
       break;
     }
   }
+  
 
+  Eigen::Vector4d pw(final_position[0], final_position[1], final_position[2], 1.);
+  Eigen::Matrix<double, 3, 4> K;
+  K << 458.654, 0.0, 367.215,0, 0.0, 457.296, 248.375, 0, 0.0, 0.0, 1.0, 0;
+  cv::Matx33d K0(458.654, 0.0, 367.215, 0.0, 457.296, 248.375, 0.0, 0.0, 1.0);
+  Eigen::Vector3d u0 = K * pw;
+  Eigen::Vector2d p0;
+  p0(0) = u0(0)/u0(2);
+  p0(1) = u0(1)/u0(2);
+
+  std::vector<cv::Point2d> pts_out;
+  cv::Point2d p(measurements[0][0], measurements[0][1]), error;
+  std::vector<cv::Point2d> pts_in;
+  pts_in.push_back(p);
+  cv::Vec4d distortion_coeffs(-0.28340811, 0.07395907, 0.00019359, 1.76187114e-05);
+
+  std::vector<cv::Point3d> homogenous_pts;
+
+  cv::convertPointsToHomogeneous(pts_in, homogenous_pts);
+  cv::projectPoints(homogenous_pts, cv::Vec3d::zeros(), cv::Vec3d::zeros(), K0,
+                    distortion_coeffs, pts_out);
+  error = pts_out[0] - cv::Point2d(p0(0), p0(1));
+  std::cout << "error: " << error << std::endl;
   // Convert the feature position to the world frame.
   position = T_c0_w.linear()*final_position + T_c0_w.translation();
 
   if (is_valid_solution)
     is_initialized = true;
 
-  // std::cout << "feature position: " << position << std::endl;
+  std::cout << "is_valid_solution: " << is_valid_solution << std::endl;
+
   return is_valid_solution;
 }
 } // namespace msckf_vio
