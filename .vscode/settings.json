@@ -1,0 +1,14 @@
+{
+    "python.autoComplete.extraPaths": [
+        "/home/ldd/msckf_real/devel/lib/python3/dist-packages",
+        "/home/ldd/msckf_vio/devel/lib/python3/dist-packages",
+        "/home/ldd/realsense_ws/devel/lib/python3/dist-packages",
+        "/opt/ros/noetic/lib/python3/dist-packages"
+    ],
+    "python.analysis.extraPaths": [
+        "/home/ldd/msckf_real/devel/lib/python3/dist-packages",
+        "/home/ldd/msckf_vio/devel/lib/python3/dist-packages",
+        "/home/ldd/realsense_ws/devel/lib/python3/dist-packages",
+        "/opt/ros/noetic/lib/python3/dist-packages"
+    ]
+}

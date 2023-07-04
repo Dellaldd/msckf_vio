@@ -39,31 +39,55 @@ TEST(FeatureInitializeTest, sphereDistribution) {
   // view are located at the six intersections between a
   // unit sphere and the coordinate system. And the z axes
   // of the camera frames are facing the origin.
-  vector<Isometry3d> cam_poses(6);
+  vector<Isometry3d> cam_poses(6);//T_c_w
   // Positive x axis.
-  cam_poses[0].linear() << 0.0,  0.0, -1.0,
-    1.0,  0.0,  0.0, 0.0, -1.0,  0.0;
-  cam_poses[0].translation() << 1.0,  0.0,  0.0;
+  // cam_poses[0].linear() << 0.0,  0.0, -1.0,
+  //   1.0,  0.0,  0.0, 0.0, -1.0,  0.0;
+  // cam_poses[0].translation() << 1.0,  0.0,  0.0;
+  // // Positive y axis.
+  // cam_poses[1].linear() << -1.0,  0.0,  0.0,
+  //    0.0,  0.0, -1.0, 0.0, -1.0,  0.0;
+  // cam_poses[1].translation() << 0.0,  1.0,  0.0;
+  // // Negative x axis.
+  // cam_poses[2].linear() << 0.0,  0.0,  1.0,
+  //   -1.0,  0.0,  0.0, 0.0, -1.0,  0.0;
+  // cam_poses[2].translation() << -1.0,  0.0,  0.0;
+  // // Negative y axis.
+  // cam_poses[3].linear() << 1.0,  0.0,  0.0,
+  //    0.0,  0.0,  1.0, 0.0, -1.0,  0.0;
+  // cam_poses[3].translation() << 0.0, -1.0,  0.0;
+  // // Positive z axis.
+  // cam_poses[4].linear() << 0.0, -1.0,  0.0,
+  //   -1.0,  0.0,  0.0, 0.0, 0.0, -1.0;
+  // cam_poses[4].translation() << 0.0,  0.0,  1.0;
+  // // Negative z axis.
+  // cam_poses[5].linear() << 1.0,  0.0,  0.0,
+  //    0.0,  1.0,  0.0, 0.0,  0.0,  1.0;
+  // cam_poses[5].translation() << 0.0,  0.0, -1.0;
+
+  cam_poses[0].linear() << 1.0,  0.0, 0.0,
+    0.0,  1.0,  0.0, 0.0, 0.0,  1.0;
+  cam_poses[0].translation() << 0.0,  0.0,  1.0;
   // Positive y axis.
-  cam_poses[1].linear() << -1.0,  0.0,  0.0,
-     0.0,  0.0, -1.0, 0.0, -1.0,  0.0;
-  cam_poses[1].translation() << 0.0,  1.0,  0.0;
+  cam_poses[1].linear() << 1.0,  0.0, 0.0,
+    0.0,  1.0,  0.0, 0.0, 0.0,  1.0;
+  cam_poses[1].translation() << 0.0,  0.0,  2.0;
   // Negative x axis.
-  cam_poses[2].linear() << 0.0,  0.0,  1.0,
-    -1.0,  0.0,  0.0, 0.0, -1.0,  0.0;
-  cam_poses[2].translation() << -1.0,  0.0,  0.0;
+  cam_poses[2].linear() << 1.0,  0.0, 0.0,
+    0.0,  1.0,  0.0, 0.0, 0.0,  1.0;
+  cam_poses[2].translation() << 0.0,  0.0,  3.0;
   // Negative y axis.
-  cam_poses[3].linear() << 1.0,  0.0,  0.0,
-     0.0,  0.0,  1.0, 0.0, -1.0,  0.0;
-  cam_poses[3].translation() << 0.0, -1.0,  0.0;
+  cam_poses[3].linear() << 1.0,  0.0, 0.0,
+    0.0,  1.0,  0.0, 0.0, 0.0,  1.0;
+  cam_poses[3].translation() << 0.0,  0.0,  -1.0;
   // Positive z axis.
-  cam_poses[4].linear() << 0.0, -1.0,  0.0,
-    -1.0,  0.0,  0.0, 0.0, 0.0, -1.0;
-  cam_poses[4].translation() << 0.0,  0.0,  1.0;
+  cam_poses[4].linear() << 1.0,  0.0, 0.0,
+    0.0,  1.0,  0.0, 0.0, 0.0,  1.0;
+  cam_poses[4].translation() << 0.0,  0.0,  -2.0;
   // Negative z axis.
-  cam_poses[5].linear() << 1.0,  0.0,  0.0,
-     0.0,  1.0,  0.0, 0.0,  0.0,  1.0;
-  cam_poses[5].translation() << 0.0,  0.0, -1.0;
+  cam_poses[5].linear() << 1.0,  0.0, 0.0,
+    0.0,  1.0,  0.0, 0.0, 0.0,  1.0;
+  cam_poses[5].translation() << 0.0,  0.0,  -3.0;
 
   // Set the camera states
   CamStateServer cam_states;
@@ -72,8 +96,8 @@ TEST(FeatureInitializeTest, sphereDistribution) {
     new_cam_state.id = i;
     new_cam_state.time = static_cast<double>(i);
     new_cam_state.orientation = rotationToQuaternion(
-        Matrix3d(cam_poses[i].linear().transpose()));
-    new_cam_state.position = cam_poses[i].translation();
+        Matrix3d(cam_poses[i].linear().transpose())); // R_w_c
+    new_cam_state.position = cam_poses[i].translation(); // t_c_w
     cam_states[new_cam_state.id] = new_cam_state;
   }
 
@@ -81,8 +105,8 @@ TEST(FeatureInitializeTest, sphereDistribution) {
   random_numbers::RandomNumberGenerator noise_generator;
   vector<Vector4d, aligned_allocator<Vector4d> > measurements(6);
   for (int i = 0; i < 6; ++i) {
-    Isometry3d cam_pose_inv = cam_poses[i].inverse();
-    Vector3d p = cam_pose_inv.linear()*feature + cam_pose_inv.translation();
+    Isometry3d cam_pose_inv = cam_poses[i].inverse();// R_w_c
+    Vector3d p = cam_pose_inv.linear()*feature + cam_pose_inv.translation();//pc
     double u = p(0) / p(2) + noise_generator.gaussian(0.0, 0.01);
     double v = p(1) / p(2) + noise_generator.gaussian(0.0, 0.01);
     //double u = p(0) / p(2);
@@ -93,9 +117,9 @@ TEST(FeatureInitializeTest, sphereDistribution) {
   for (int i = 0; i < 6; ++i) {
     cout << "pose " << i << ":" << endl;
     cout << "orientation: " << endl;
-    cout << cam_poses[i].linear() << endl;
+    cout << cam_states[i].orientation << endl;
     cout << "translation: "  << endl;
-    cout << cam_poses[i].translation().transpose() << endl;
+    cout << cam_states[i].position.transpose() << endl;
     cout << "measurement: " << endl;
     cout << measurements[i].transpose() << endl;
     cout << endl;

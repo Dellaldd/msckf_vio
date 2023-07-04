@@ -1,0 +1,27 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/ldd/msckf_real/devel/include/**",
+        "/home/ldd/msckf_vio/devel/include/**",
+        "/home/ldd/realsense_ws/devel/include/**",
+        "/opt/ros/noetic/include/**",
+        "/home/ldd/realsense_ws/src/ddynamic_reconfigure/include/**",
+        "/home/ldd/catkin_ws/src/hello/include/**",
+        "/home/ldd/msckf_real/src/msckf_vio/include/**",
+        "/home/ldd/realsense_ws/src/realsense-ros/realsense2_camera/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}

@@ -1,0 +1,1230 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1
+					],
+					"hasInstallRule" : true,
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8.12"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15,
+						16,
+						17,
+						18,
+						19,
+						20,
+						21,
+						22,
+						23,
+						24,
+						25,
+						26,
+						27,
+						28,
+						29,
+						30,
+						31,
+						32,
+						33,
+						34,
+						35,
+						36,
+						41,
+						42,
+						43,
+						44,
+						45,
+						46,
+						47,
+						48,
+						49,
+						50,
+						51,
+						52,
+						53,
+						54,
+						55,
+						56,
+						57,
+						58,
+						59,
+						60,
+						61,
+						62,
+						63,
+						64,
+						65,
+						66,
+						67,
+						68,
+						69,
+						70,
+						71,
+						72,
+						73,
+						74,
+						75,
+						76,
+						77,
+						78,
+						79,
+						80,
+						81,
+						82,
+						83,
+						84,
+						85,
+						86,
+						87,
+						88,
+						89,
+						90,
+						91,
+						92,
+						93,
+						94,
+						95,
+						96,
+						97,
+						98,
+						99,
+						100,
+						101,
+						102,
+						103,
+						104,
+						105,
+						106,
+						107,
+						108,
+						109,
+						110,
+						111,
+						112,
+						113,
+						114,
+						115,
+						116,
+						117,
+						118,
+						119,
+						120
+					]
+				},
+				{
+					"build" : "gtest",
+					"childIndexes" : 
+					[
+						2
+					],
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8.8"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "/usr/src/googletest"
+				},
+				{
+					"build" : "gtest/googlemock",
+					"childIndexes" : 
+					[
+						3
+					],
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.6.4"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 2,
+					"source" : "/usr/src/googletest/googlemock",
+					"targetIndexes" : 
+					[
+						37,
+						38
+					]
+				},
+				{
+					"build" : "gtest/googletest",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.6.4"
+					},
+					"parentIndex" : 2,
+					"projectIndex" : 3,
+					"source" : "/usr/src/googletest/googletest",
+					"targetIndexes" : 
+					[
+						39,
+						40
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1
+					],
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "msckf_vio",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15,
+						16,
+						17,
+						18,
+						19,
+						20,
+						21,
+						22,
+						23,
+						24,
+						25,
+						26,
+						27,
+						28,
+						29,
+						30,
+						31,
+						32,
+						33,
+						34,
+						35,
+						36,
+						41,
+						42,
+						43,
+						44,
+						45,
+						46,
+						47,
+						48,
+						49,
+						50,
+						51,
+						52,
+						53,
+						54,
+						55,
+						56,
+						57,
+						58,
+						59,
+						60,
+						61,
+						62,
+						63,
+						64,
+						65,
+						66,
+						67,
+						68,
+						69,
+						70,
+						71,
+						72,
+						73,
+						74,
+						75,
+						76,
+						77,
+						78,
+						79,
+						80,
+						81,
+						82,
+						83,
+						84,
+						85,
+						86,
+						87,
+						88,
+						89,
+						90,
+						91,
+						92,
+						93,
+						94,
+						95,
+						96,
+						97,
+						98,
+						99,
+						100,
+						101,
+						102,
+						103,
+						104,
+						105,
+						106,
+						107,
+						108,
+						109,
+						110,
+						111,
+						112,
+						113,
+						114,
+						115,
+						116,
+						117,
+						118,
+						119,
+						120
+					]
+				},
+				{
+					"childIndexes" : 
+					[
+						2
+					],
+					"directoryIndexes" : 
+					[
+						1
+					],
+					"name" : "googletest-distribution",
+					"parentIndex" : 0
+				},
+				{
+					"childIndexes" : 
+					[
+						3
+					],
+					"directoryIndexes" : 
+					[
+						2
+					],
+					"name" : "gmock",
+					"parentIndex" : 1,
+					"targetIndexes" : 
+					[
+						37,
+						38
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						3
+					],
+					"name" : "gtest",
+					"parentIndex" : 2,
+					"targetIndexes" : 
+					[
+						39,
+						40
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "_msckf_vio_generate_messages_check_deps_CameraMeasurement::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-_msckf_vio_generate_messages_check_deps_CameraMeasurement-Debug-a854171247d91ebf5612.json",
+					"name" : "_msckf_vio_generate_messages_check_deps_CameraMeasurement",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "_msckf_vio_generate_messages_check_deps_FeatureMeasurement::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-_msckf_vio_generate_messages_check_deps_FeatureMeasurement-Debug-53725cf460e6a8a3dc07.json",
+					"name" : "_msckf_vio_generate_messages_check_deps_FeatureMeasurement",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "_msckf_vio_generate_messages_check_deps_TrackingInfo::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-_msckf_vio_generate_messages_check_deps_TrackingInfo-Debug-0211d321d92cec939722.json",
+					"name" : "_msckf_vio_generate_messages_check_deps_TrackingInfo",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "_run_tests_msckf_vio::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-_run_tests_msckf_vio-Debug-fcd81a3a448be6ba18c1.json",
+					"name" : "_run_tests_msckf_vio",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "_run_tests_msckf_vio_gtest::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-_run_tests_msckf_vio_gtest-Debug-cf0d9cb915a413672ac4.json",
+					"name" : "_run_tests_msckf_vio_gtest",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "_run_tests_msckf_vio_gtest_test_feature_init::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-_run_tests_msckf_vio_gtest_test_feature_init-Debug-9e19e96e5433be403116.json",
+					"name" : "_run_tests_msckf_vio_gtest_test_feature_init",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "_run_tests_msckf_vio_gtest_test_math_utils::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-_run_tests_msckf_vio_gtest_test_math_utils-Debug-a0fed31eabaca6534e08.json",
+					"name" : "_run_tests_msckf_vio_gtest_test_math_utils",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "actionlib_generate_messages_cpp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-actionlib_generate_messages_cpp-Debug-f2c18ababf03ddad5a4b.json",
+					"name" : "actionlib_generate_messages_cpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "actionlib_generate_messages_eus::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-actionlib_generate_messages_eus-Debug-084316002fb0852e4d5d.json",
+					"name" : "actionlib_generate_messages_eus",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "actionlib_generate_messages_lisp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-actionlib_generate_messages_lisp-Debug-01afc6f9d9cebedd9ce3.json",
+					"name" : "actionlib_generate_messages_lisp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "actionlib_generate_messages_nodejs::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-actionlib_generate_messages_nodejs-Debug-030a7a17a63a355dd00a.json",
+					"name" : "actionlib_generate_messages_nodejs",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "actionlib_generate_messages_py::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-actionlib_generate_messages_py-Debug-8f7ab387826795e5a152.json",
+					"name" : "actionlib_generate_messages_py",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "actionlib_msgs_generate_messages_cpp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-actionlib_msgs_generate_messages_cpp-Debug-1fdedff8945ddf6d431c.json",
+					"name" : "actionlib_msgs_generate_messages_cpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "actionlib_msgs_generate_messages_eus::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-actionlib_msgs_generate_messages_eus-Debug-0fb8f4937c152e2411da.json",
+					"name" : "actionlib_msgs_generate_messages_eus",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "actionlib_msgs_generate_messages_lisp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-actionlib_msgs_generate_messages_lisp-Debug-b5eca5c9c59dc3358a0b.json",
+					"name" : "actionlib_msgs_generate_messages_lisp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "actionlib_msgs_generate_messages_nodejs::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-actionlib_msgs_generate_messages_nodejs-Debug-450925504e03d11cb8eb.json",
+					"name" : "actionlib_msgs_generate_messages_nodejs",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "actionlib_msgs_generate_messages_py::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-actionlib_msgs_generate_messages_py-Debug-e2301b86ec21bb649998.json",
+					"name" : "actionlib_msgs_generate_messages_py",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "bond_generate_messages_cpp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-bond_generate_messages_cpp-Debug-4f90cde0f41d7870319a.json",
+					"name" : "bond_generate_messages_cpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "bond_generate_messages_eus::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-bond_generate_messages_eus-Debug-d6b427160e333e2d3fb5.json",
+					"name" : "bond_generate_messages_eus",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "bond_generate_messages_lisp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-bond_generate_messages_lisp-Debug-2a4913581c893275b9e8.json",
+					"name" : "bond_generate_messages_lisp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "bond_generate_messages_nodejs::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-bond_generate_messages_nodejs-Debug-98b0629ea5410384c127.json",
+					"name" : "bond_generate_messages_nodejs",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "bond_generate_messages_py::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-bond_generate_messages_py-Debug-3fb8908f2f94b7a14a32.json",
+					"name" : "bond_generate_messages_py",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "clean_test_results::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-clean_test_results-Debug-bcd7e30437cb0cfa59c4.json",
+					"name" : "clean_test_results",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "clean_test_results_msckf_vio::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-clean_test_results_msckf_vio-Debug-cb39f0de447221f50753.json",
+					"name" : "clean_test_results_msckf_vio",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "download_extra_data::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-download_extra_data-Debug-0b8089ebe20b85797558.json",
+					"name" : "download_extra_data",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "doxygen::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-doxygen-Debug-0b402ddbc2301865a84c.json",
+					"name" : "doxygen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "dynamic_reconfigure_gencfg::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-dynamic_reconfigure_gencfg-Debug-e35b5d1bc650360e218b.json",
+					"name" : "dynamic_reconfigure_gencfg",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "dynamic_reconfigure_generate_messages_cpp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-dynamic_reconfigure_generate_messages_cpp-Debug-f7cccaa275ed819e37d8.json",
+					"name" : "dynamic_reconfigure_generate_messages_cpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "dynamic_reconfigure_generate_messages_eus::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-dynamic_reconfigure_generate_messages_eus-Debug-df00886d7c05ce96144c.json",
+					"name" : "dynamic_reconfigure_generate_messages_eus",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "dynamic_reconfigure_generate_messages_lisp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-dynamic_reconfigure_generate_messages_lisp-Debug-23fe8de81fe6c8c543cf.json",
+					"name" : "dynamic_reconfigure_generate_messages_lisp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "dynamic_reconfigure_generate_messages_nodejs::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-dynamic_reconfigure_generate_messages_nodejs-Debug-ebcbe46cd63a30e6b0a6.json",
+					"name" : "dynamic_reconfigure_generate_messages_nodejs",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "dynamic_reconfigure_generate_messages_py::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-dynamic_reconfigure_generate_messages_py-Debug-19c254f836eba7baf5bb.json",
+					"name" : "dynamic_reconfigure_generate_messages_py",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "geometry_msgs_generate_messages_cpp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-geometry_msgs_generate_messages_cpp-Debug-d84464445386768152c5.json",
+					"name" : "geometry_msgs_generate_messages_cpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "geometry_msgs_generate_messages_eus::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-geometry_msgs_generate_messages_eus-Debug-277a9d940cc08ef63ee7.json",
+					"name" : "geometry_msgs_generate_messages_eus",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "geometry_msgs_generate_messages_lisp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-geometry_msgs_generate_messages_lisp-Debug-7bf69dc5274ba33b9204.json",
+					"name" : "geometry_msgs_generate_messages_lisp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "geometry_msgs_generate_messages_nodejs::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-geometry_msgs_generate_messages_nodejs-Debug-01886534136e96b023bf.json",
+					"name" : "geometry_msgs_generate_messages_nodejs",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "geometry_msgs_generate_messages_py::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-geometry_msgs_generate_messages_py-Debug-87edba91e5e64870703e.json",
+					"name" : "geometry_msgs_generate_messages_py",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "gmock::@e3f94eedc5dc07131386",
+					"jsonFile" : "target-gmock-Debug-bf627e276c02428ce1ad.json",
+					"name" : "gmock",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "gmock_main::@e3f94eedc5dc07131386",
+					"jsonFile" : "target-gmock_main-Debug-ee5d97169909378bd1d5.json",
+					"name" : "gmock_main",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "gtest::@b738d542747fbb7ea6e3",
+					"jsonFile" : "target-gtest-Debug-161515d376cde1d2459e.json",
+					"name" : "gtest",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "gtest_main::@b738d542747fbb7ea6e3",
+					"jsonFile" : "target-gtest_main-Debug-f3b015552d939251246d.json",
+					"name" : "gtest_main",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "image_processor::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-image_processor-Debug-8699f69fb6b6639c0ee3.json",
+					"name" : "image_processor",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "image_processor_nodelet::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-image_processor_nodelet-Debug-f5b427e8ac527183e98f.json",
+					"name" : "image_processor_nodelet",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "msckf_vio::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-msckf_vio-Debug-348b2a90937c7abe4ad1.json",
+					"name" : "msckf_vio",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "msckf_vio_gencpp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-msckf_vio_gencpp-Debug-e6ca40ff8e923a2f0eae.json",
+					"name" : "msckf_vio_gencpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "msckf_vio_generate_messages::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-msckf_vio_generate_messages-Debug-aa63ebddf1aecf99a048.json",
+					"name" : "msckf_vio_generate_messages",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "msckf_vio_generate_messages_cpp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-msckf_vio_generate_messages_cpp-Debug-e3cbecbff92d59cc32bf.json",
+					"name" : "msckf_vio_generate_messages_cpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "msckf_vio_generate_messages_eus::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-msckf_vio_generate_messages_eus-Debug-7ea58bf46cdf78e6c92f.json",
+					"name" : "msckf_vio_generate_messages_eus",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "msckf_vio_generate_messages_lisp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-msckf_vio_generate_messages_lisp-Debug-1944af6e7d92b2355769.json",
+					"name" : "msckf_vio_generate_messages_lisp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "msckf_vio_generate_messages_nodejs::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-msckf_vio_generate_messages_nodejs-Debug-3a51a29e187713c27873.json",
+					"name" : "msckf_vio_generate_messages_nodejs",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "msckf_vio_generate_messages_py::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-msckf_vio_generate_messages_py-Debug-02f26381f0669568c16d.json",
+					"name" : "msckf_vio_generate_messages_py",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "msckf_vio_geneus::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-msckf_vio_geneus-Debug-cb26b2172697e04c43b8.json",
+					"name" : "msckf_vio_geneus",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "msckf_vio_genlisp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-msckf_vio_genlisp-Debug-427f142e7e3eccc4b7a6.json",
+					"name" : "msckf_vio_genlisp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "msckf_vio_gennodejs::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-msckf_vio_gennodejs-Debug-d12edb8c378737e1fe0c.json",
+					"name" : "msckf_vio_gennodejs",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "msckf_vio_genpy::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-msckf_vio_genpy-Debug-895efc7b46f0088c022e.json",
+					"name" : "msckf_vio_genpy",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "msckf_vio_nodelet::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-msckf_vio_nodelet-Debug-eb1803151a570b374708.json",
+					"name" : "msckf_vio_nodelet",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "nav_msgs_generate_messages_cpp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-nav_msgs_generate_messages_cpp-Debug-1e2710bd2c46126e8f52.json",
+					"name" : "nav_msgs_generate_messages_cpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "nav_msgs_generate_messages_eus::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-nav_msgs_generate_messages_eus-Debug-7e336926263c057445c0.json",
+					"name" : "nav_msgs_generate_messages_eus",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "nav_msgs_generate_messages_lisp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-nav_msgs_generate_messages_lisp-Debug-69fd8906fd197fef25ed.json",
+					"name" : "nav_msgs_generate_messages_lisp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "nav_msgs_generate_messages_nodejs::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-nav_msgs_generate_messages_nodejs-Debug-587d2c3db5cf763c0f2f.json",
+					"name" : "nav_msgs_generate_messages_nodejs",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "nav_msgs_generate_messages_py::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-nav_msgs_generate_messages_py-Debug-740628187ab195fa177a.json",
+					"name" : "nav_msgs_generate_messages_py",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "nodelet_generate_messages_cpp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-nodelet_generate_messages_cpp-Debug-4b3a5da7da16db996f9d.json",
+					"name" : "nodelet_generate_messages_cpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "nodelet_generate_messages_eus::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-nodelet_generate_messages_eus-Debug-58b43f1998ecefcc4547.json",
+					"name" : "nodelet_generate_messages_eus",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "nodelet_generate_messages_lisp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-nodelet_generate_messages_lisp-Debug-56fdbfa823450ecbccba.json",
+					"name" : "nodelet_generate_messages_lisp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "nodelet_generate_messages_nodejs::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-nodelet_generate_messages_nodejs-Debug-bd9c0c8085206ab87343.json",
+					"name" : "nodelet_generate_messages_nodejs",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "nodelet_generate_messages_py::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-nodelet_generate_messages_py-Debug-59f8c76302cd1cca6252.json",
+					"name" : "nodelet_generate_messages_py",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "nodelet_topic_tools_gencfg::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-nodelet_topic_tools_gencfg-Debug-6524fc806889a266f232.json",
+					"name" : "nodelet_topic_tools_gencfg",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "pcl_msgs_generate_messages_cpp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-pcl_msgs_generate_messages_cpp-Debug-f08e40411e5c9afc2671.json",
+					"name" : "pcl_msgs_generate_messages_cpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "pcl_msgs_generate_messages_eus::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-pcl_msgs_generate_messages_eus-Debug-eb658036d6b59482db47.json",
+					"name" : "pcl_msgs_generate_messages_eus",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "pcl_msgs_generate_messages_lisp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-pcl_msgs_generate_messages_lisp-Debug-821a9d7ec1fbdc8b1d6f.json",
+					"name" : "pcl_msgs_generate_messages_lisp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "pcl_msgs_generate_messages_nodejs::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-pcl_msgs_generate_messages_nodejs-Debug-000b3984b702d702af53.json",
+					"name" : "pcl_msgs_generate_messages_nodejs",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "pcl_msgs_generate_messages_py::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-pcl_msgs_generate_messages_py-Debug-1f6d109fd47a18aae291.json",
+					"name" : "pcl_msgs_generate_messages_py",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "pcl_ros_gencfg::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-pcl_ros_gencfg-Debug-f400d84f32213c1d27b6.json",
+					"name" : "pcl_ros_gencfg",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "roscpp_generate_messages_cpp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-roscpp_generate_messages_cpp-Debug-2bedd0566231a5872915.json",
+					"name" : "roscpp_generate_messages_cpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "roscpp_generate_messages_eus::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-roscpp_generate_messages_eus-Debug-250d1d642989fdf50c5a.json",
+					"name" : "roscpp_generate_messages_eus",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "roscpp_generate_messages_lisp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-roscpp_generate_messages_lisp-Debug-782a75ded228dcd35900.json",
+					"name" : "roscpp_generate_messages_lisp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "roscpp_generate_messages_nodejs::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-roscpp_generate_messages_nodejs-Debug-709adb9d54c8339557e7.json",
+					"name" : "roscpp_generate_messages_nodejs",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "roscpp_generate_messages_py::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-roscpp_generate_messages_py-Debug-0be20a0839ffe98e7697.json",
+					"name" : "roscpp_generate_messages_py",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "rosgraph_msgs_generate_messages_cpp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-rosgraph_msgs_generate_messages_cpp-Debug-464fe2579b6b4162002d.json",
+					"name" : "rosgraph_msgs_generate_messages_cpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "rosgraph_msgs_generate_messages_eus::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-rosgraph_msgs_generate_messages_eus-Debug-5d216c67cd9481bc8329.json",
+					"name" : "rosgraph_msgs_generate_messages_eus",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "rosgraph_msgs_generate_messages_lisp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-rosgraph_msgs_generate_messages_lisp-Debug-f100a4fd4965cbf6a688.json",
+					"name" : "rosgraph_msgs_generate_messages_lisp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "rosgraph_msgs_generate_messages_nodejs::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-rosgraph_msgs_generate_messages_nodejs-Debug-20395e44975cb5ce94c2.json",
+					"name" : "rosgraph_msgs_generate_messages_nodejs",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "rosgraph_msgs_generate_messages_py::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-rosgraph_msgs_generate_messages_py-Debug-8a8c682a72ee2c82b4dd.json",
+					"name" : "rosgraph_msgs_generate_messages_py",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "run_tests::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-run_tests-Debug-433ac6db265533748dc5.json",
+					"name" : "run_tests",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "run_tests_msckf_vio::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-run_tests_msckf_vio-Debug-3e64b9589c9d25ce812c.json",
+					"name" : "run_tests_msckf_vio",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "run_tests_msckf_vio_gtest::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-run_tests_msckf_vio_gtest-Debug-d2bd99401773fe55afc9.json",
+					"name" : "run_tests_msckf_vio_gtest",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "run_tests_msckf_vio_gtest_test_feature_init::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-run_tests_msckf_vio_gtest_test_feature_init-Debug-10c0a6151065981c2a0f.json",
+					"name" : "run_tests_msckf_vio_gtest_test_feature_init",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "run_tests_msckf_vio_gtest_test_math_utils::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-run_tests_msckf_vio_gtest_test_math_utils-Debug-7e1eae4d16045ce6d331.json",
+					"name" : "run_tests_msckf_vio_gtest_test_math_utils",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sensor_msgs_generate_messages_cpp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sensor_msgs_generate_messages_cpp-Debug-13a8d0cbe0ff61c4ab63.json",
+					"name" : "sensor_msgs_generate_messages_cpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sensor_msgs_generate_messages_eus::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sensor_msgs_generate_messages_eus-Debug-62039ebbb9c0d3214765.json",
+					"name" : "sensor_msgs_generate_messages_eus",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sensor_msgs_generate_messages_lisp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sensor_msgs_generate_messages_lisp-Debug-4dbcea2572fb430e285a.json",
+					"name" : "sensor_msgs_generate_messages_lisp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sensor_msgs_generate_messages_nodejs::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sensor_msgs_generate_messages_nodejs-Debug-6f66e3d0c9d539c8d206.json",
+					"name" : "sensor_msgs_generate_messages_nodejs",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sensor_msgs_generate_messages_py::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sensor_msgs_generate_messages_py-Debug-854e90c5d221b0221f6b.json",
+					"name" : "sensor_msgs_generate_messages_py",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "std_msgs_generate_messages_cpp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-std_msgs_generate_messages_cpp-Debug-e195d27c54644555322b.json",
+					"name" : "std_msgs_generate_messages_cpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "std_msgs_generate_messages_eus::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-std_msgs_generate_messages_eus-Debug-80786c3be0963e059254.json",
+					"name" : "std_msgs_generate_messages_eus",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "std_msgs_generate_messages_lisp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-std_msgs_generate_messages_lisp-Debug-0f99a99bc1e550fbde1b.json",
+					"name" : "std_msgs_generate_messages_lisp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "std_msgs_generate_messages_nodejs::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-std_msgs_generate_messages_nodejs-Debug-b23b79f43d523463fee0.json",
+					"name" : "std_msgs_generate_messages_nodejs",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "std_msgs_generate_messages_py::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-std_msgs_generate_messages_py-Debug-1961233dbfe0fb5be88f.json",
+					"name" : "std_msgs_generate_messages_py",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "std_srvs_generate_messages_cpp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-std_srvs_generate_messages_cpp-Debug-0737806f25caa6a14fff.json",
+					"name" : "std_srvs_generate_messages_cpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "std_srvs_generate_messages_eus::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-std_srvs_generate_messages_eus-Debug-1dd4961a27a3bbf1f420.json",
+					"name" : "std_srvs_generate_messages_eus",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "std_srvs_generate_messages_lisp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-std_srvs_generate_messages_lisp-Debug-5ab063bbfccb7c6acb0a.json",
+					"name" : "std_srvs_generate_messages_lisp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "std_srvs_generate_messages_nodejs::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-std_srvs_generate_messages_nodejs-Debug-3bfea18ecd87b2951203.json",
+					"name" : "std_srvs_generate_messages_nodejs",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "std_srvs_generate_messages_py::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-std_srvs_generate_messages_py-Debug-12e98da0fcd658bf763e.json",
+					"name" : "std_srvs_generate_messages_py",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "test_feature_init::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-test_feature_init-Debug-27ac3dfc8b2dc1427723.json",
+					"name" : "test_feature_init",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "test_math_utils::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-test_math_utils-Debug-53d656181f51f30cf646.json",
+					"name" : "test_math_utils",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "tests::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-tests-Debug-b9391d146c61f30ec881.json",
+					"name" : "tests",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "tf2_msgs_generate_messages_cpp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-tf2_msgs_generate_messages_cpp-Debug-6999fe1c1e33f3a66c88.json",
+					"name" : "tf2_msgs_generate_messages_cpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "tf2_msgs_generate_messages_eus::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-tf2_msgs_generate_messages_eus-Debug-5f1de25c9cbc7aa13c3e.json",
+					"name" : "tf2_msgs_generate_messages_eus",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "tf2_msgs_generate_messages_lisp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-tf2_msgs_generate_messages_lisp-Debug-09a6e213f663a3014846.json",
+					"name" : "tf2_msgs_generate_messages_lisp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "tf2_msgs_generate_messages_nodejs::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-tf2_msgs_generate_messages_nodejs-Debug-9e053c667bad61a018da.json",
+					"name" : "tf2_msgs_generate_messages_nodejs",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "tf2_msgs_generate_messages_py::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-tf2_msgs_generate_messages_py-Debug-047c2b7f801b711b1e9f.json",
+					"name" : "tf2_msgs_generate_messages_py",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "tf_generate_messages_cpp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-tf_generate_messages_cpp-Debug-57121e601366d360814c.json",
+					"name" : "tf_generate_messages_cpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "tf_generate_messages_eus::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-tf_generate_messages_eus-Debug-fa30cf7812d31ad2fa73.json",
+					"name" : "tf_generate_messages_eus",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "tf_generate_messages_lisp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-tf_generate_messages_lisp-Debug-64c5b120d91d2aa27b26.json",
+					"name" : "tf_generate_messages_lisp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "tf_generate_messages_nodejs::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-tf_generate_messages_nodejs-Debug-c0b66451c1b6311de46a.json",
+					"name" : "tf_generate_messages_nodejs",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "tf_generate_messages_py::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-tf_generate_messages_py-Debug-4730250504b71899d12d.json",
+					"name" : "tf_generate_messages_py",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "topic_tools_generate_messages_cpp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-topic_tools_generate_messages_cpp-Debug-020916d2e968a1b41ad1.json",
+					"name" : "topic_tools_generate_messages_cpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "topic_tools_generate_messages_eus::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-topic_tools_generate_messages_eus-Debug-ac12d162cf34ce4fea88.json",
+					"name" : "topic_tools_generate_messages_eus",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "topic_tools_generate_messages_lisp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-topic_tools_generate_messages_lisp-Debug-7325ebddd469af1f151e.json",
+					"name" : "topic_tools_generate_messages_lisp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "topic_tools_generate_messages_nodejs::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-topic_tools_generate_messages_nodejs-Debug-d26be330f2a738b46e1c.json",
+					"name" : "topic_tools_generate_messages_nodejs",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "topic_tools_generate_messages_py::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-topic_tools_generate_messages_py-Debug-4bfcefb739d158f61f6b.json",
+					"name" : "topic_tools_generate_messages_py",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/home/ldd/msckf_real/src/msckf_vio/build",
+		"source" : "/home/ldd/msckf_real/src/msckf_vio"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 0
+	}
+}
