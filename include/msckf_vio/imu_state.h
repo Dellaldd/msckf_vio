@@ -1,9 +1,4 @@
-/*
- * COPYRIGHT AND PERMISSION NOTICE
- * Penn Software MSCKF_VIO
- * Copyright (C) 2017 The Trustees of the University of Pennsylvania
- * All rights reserved.
- */
+
 
 #ifndef MSCKF_VIO_IMU_STATE_H
 #define MSCKF_VIO_IMU_STATE_H
@@ -24,7 +19,7 @@ namespace msckf_vio {
 struct Gt{
     long double time;
     Eigen::Quaterniond q;
-    Eigen::Vector3d p;
+    Eigen::Vector3d p,vel;
     
 };
 

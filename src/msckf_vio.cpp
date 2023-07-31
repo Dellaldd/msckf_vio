@@ -1,15 +1,12 @@
-/*
- * COPYRIGHT AND PERMISSION NOTICE
- * Penn Software MSCKF_VIO
- * Copyright (C) 2017 The Trustees of the University of Pennsylvania
- * All rights reserved.
- */
+
 
 #include <iostream>
 #include <iomanip>
 #include <cmath>
 #include <iterator>
 #include <algorithm>
+
+
 
 #include <Eigen/SVD>
 #include <Eigen/QR>
@@ -57,12 +54,50 @@ MsckfVio::MsckfVio(ros::NodeHandle& pnh):
   return;
 }
 
-bool MsckfVio::loadParameters() {
+void MsckfVio::undistortPoints(
+    const vector<cv::Point2f>& pts_in,
+    const cv::Vec4d& intrinsics,
+    const string& distortion_model,
+    const cv::Vec4d& distortion_coeffs,
+    vector<cv::Point2f>& pts_out,
+    const cv::Matx33d &rectification_matrix,
+    const cv::Vec4d &new_intrinsics) {
 
+  if (pts_in.size() == 0) return;
+
+  const cv::Matx33d K(
+      intrinsics[0], 0.0, intrinsics[2],
+      0.0, intrinsics[1], intrinsics[3],
+      0.0, 0.0, 1.0);
+
+  const cv::Matx33d K_new(
+      new_intrinsics[0], 0.0, new_intrinsics[2],
+      0.0, new_intrinsics[1], new_intrinsics[3],
+      0.0, 0.0, 1.0);
+
+  if (distortion_model == "radtan") {
+    cv::undistortPoints(pts_in, pts_out, K, distortion_coeffs,
+                        rectification_matrix, K_new);
+  } else if (distortion_model == "equidistant") {
+    cv::fisheye::undistortPoints(pts_in, pts_out, K, distortion_coeffs,
+                                 rectification_matrix, K_new);
+  } else {
+    ROS_WARN_ONCE("The model %s is unrecognized, use radtan instead...",
+                  distortion_model.c_str());
+    cv::undistortPoints(pts_in, pts_out, K, distortion_coeffs,
+                        rectification_matrix, K_new);
+  }
+
+  return;
+}
+
+bool MsckfVio::loadParameters() {
 
   // gt
     ifstream ifs_gt;
-    string gt_path_full = "/home/ldd/euroc/V1_01_easy/mav0/state_groundtruth_estimate0/V1_01_easy.txt";
+    // string gt_path_full = "/home/ldd/bias_esti_ws/src/bias_esti/trajectory/imu_hz_400/imu_noise.txt";
+    string gt_path_full = "/home/ldd/euroc/V1_01_easy/mav0/gt.txt";
+
     ifs_gt.open(gt_path_full, ios::in);  //读取文件
     if(!ifs_gt.is_open())
     {
@@ -77,17 +112,73 @@ bool MsckfVio::loadParameters() {
     string s_gt = " ";
     vector<std::string> vec_gt;
 
-    // openvins gt
+    // simulation dataset
+    // for(int i=0; i<lines_gt.size(); ++i){
+    //     vec_gt = split_vec(lines_gt[i],s_gt);
+    //     gt_pose.time = std::stold(vec_gt[0]);
+    //     gt_pose.p << std::stod(vec_gt[5]), std::stod(vec_gt[6]), std::stod(vec_gt[7]);
+
+    //     gt_pose.q.x() = std::stod(vec_gt[2]);
+    //     gt_pose.q.y() = std::stod(vec_gt[3]);
+    //     gt_pose.q.z() = std::stod(vec_gt[4]);
+    //     gt_pose.q.w() = std::stod(vec_gt[1]);
+    //     gt_pose.vel = Vector3d(std::stod(vec_gt[8]), std::stod(vec_gt[9]), std::stod(vec_gt[10]));
+
+    //     gt_poses.push_back(gt_pose);
+    // }
+
+    // euroc 
     for(int i=1; i<lines_gt.size(); ++i){
-        vec_gt = split_vec(lines_gt[i],s_gt);
-        gt_pose.time = std::stold(vec_gt[0]);
-        gt_pose.p << std::stod(vec_gt[1]), std::stod(vec_gt[2]), std::stod(vec_gt[3]);
-        gt_pose.q.x() = std::stod(vec_gt[4]);
-        gt_pose.q.y() = std::stod(vec_gt[5]);
-        gt_pose.q.z() = std::stod(vec_gt[6]);
-        gt_pose.q.w() = std::stod(vec_gt[7]);
-        gt_poses.push_back(gt_pose);
+      vec_gt = split_vec(lines_gt[i],s_gt);
+      gt_pose.time = std::stold(vec_gt[0]);
+      gt_pose.p << std::stod(vec_gt[1]), std::stod(vec_gt[2]), std::stod(vec_gt[3]);
+
+      gt_pose.q.x() = std::stod(vec_gt[4]);
+      gt_pose.q.y() = std::stod(vec_gt[5]);
+      gt_pose.q.z() = std::stod(vec_gt[6]);
+      gt_pose.q.w() = std::stod(vec_gt[7]);
+
+      gt_pose.vel = Vector3d(0,0,0);
+
+      gt_poses.push_back(gt_pose);
     }
+
+
+  // camera
+  nh.param<string>("cam0/distortion_model",
+      cam0_distortion_model, string("radtan"));
+  nh.param<string>("cam1/distortion_model",
+      cam1_distortion_model, string("radtan"));
+
+  vector<double> cam0_intrinsics_temp(4);
+  nh.getParam("cam0/intrinsics", cam0_intrinsics_temp);
+  cam0_intrinsics[0] = cam0_intrinsics_temp[0];
+  cam0_intrinsics[1] = cam0_intrinsics_temp[1];
+  cam0_intrinsics[2] = cam0_intrinsics_temp[2];
+  cam0_intrinsics[3] = cam0_intrinsics_temp[3];
+
+  vector<double> cam1_intrinsics_temp(4);
+  nh.getParam("cam1/intrinsics", cam1_intrinsics_temp);
+  cam1_intrinsics[0] = cam1_intrinsics_temp[0];
+  cam1_intrinsics[1] = cam1_intrinsics_temp[1];
+  cam1_intrinsics[2] = cam1_intrinsics_temp[2];
+  cam1_intrinsics[3] = cam1_intrinsics_temp[3];
+
+  vector<double> cam0_distortion_coeffs_temp(4);
+  nh.getParam("cam0/distortion_coeffs",
+      cam0_distortion_coeffs_temp);
+  cam0_distortion_coeffs[0] = cam0_distortion_coeffs_temp[0];
+  cam0_distortion_coeffs[1] = cam0_distortion_coeffs_temp[1];
+  cam0_distortion_coeffs[2] = cam0_distortion_coeffs_temp[2];
+  cam0_distortion_coeffs[3] = cam0_distortion_coeffs_temp[3];
+
+  vector<double> cam1_distortion_coeffs_temp(4);
+  nh.getParam("cam1/distortion_coeffs",
+      cam1_distortion_coeffs_temp);
+  cam1_distortion_coeffs[0] = cam1_distortion_coeffs_temp[0];
+  cam1_distortion_coeffs[1] = cam1_distortion_coeffs_temp[1];
+  cam1_distortion_coeffs[2] = cam1_distortion_coeffs_temp[2];
+  cam1_distortion_coeffs[3] = cam1_distortion_coeffs_temp[3];
 
   // Frame id
   nh.param<string>("fixed_frame_id", fixed_frame_id, "world");
@@ -265,9 +356,8 @@ void MsckfVio::imuCallback(
   // when the next image is available, in which way, we can
   // easily handle the transfer delay.
   imu_msg_buffer.push_back(*msg);
-
   if (!is_gravity_set) {
-    if (imu_msg_buffer.size() < 200) return;
+    // if (imu_msg_buffer.size() < 200) return;
     //if (imu_msg_buffer.size() < 10) return;
     initializeGravityAndBias(msg);
     is_gravity_set = true;
@@ -310,19 +400,21 @@ void MsckfVio::initializeGravityAndBias(const sensor_msgs::ImuConstPtr& msg) {
   //   gravity_imu, -IMUState::gravity);
   // state_server.imu_state.orientation =
   //   rotationToQuaternion(q0_i_w.toRotationMatrix().transpose());
-  double time = msg->header.stamp.toSec();
-  while(gt_num < gt_poses.size()){
-        if (gt_poses[gt_num].time < time){
-            gt_num ++;
-        }else{
-            break;
-        }   
-    }
-    gt_init = gt_num; 
+  // double time = msg->header.stamp.toSec();
+
+  // while(gt_num < gt_poses.size()){
+  //   if (gt_poses[gt_num].time < time){
+  //     gt_num ++;
+  //   }else{
+  //     break;
+  //   }   
+  // }
+  // gt_init = gt_num; 
   
   state_server.imu_state.orientation =
     rotationToQuaternion(gt_poses[gt_init].q.toRotationMatrix().cast<double>().transpose()); //T_w_imu
   state_server.imu_state.position = gt_poses[gt_init].p.cast<double>(); //p_imu_w
+  state_server.imu_state.velocity = gt_poses[gt_init].vel.cast<double>();
   return;
 }
 
@@ -609,7 +701,7 @@ void MsckfVio::processModel(const double& time,
   Matrix<double, 21, 21> Fdt_square = Fdt * Fdt;
   Matrix<double, 21, 21> Fdt_cube = Fdt_square * Fdt;
   Matrix<double, 21, 21> Phi = Matrix<double, 21, 21>::Identity() +
-    Fdt + 0.5*Fdt_square + (1.0/6.0)*Fdt_cube;
+    Fdt + 0.5*Fdt_square + (1.0/6.0)*Fdt_cube; // 积分
 
   // Propogate the state using 4th order Runge-Kutta
   predictNewState(dtime, gyro, acc);
@@ -634,11 +726,15 @@ void MsckfVio::processModel(const double& time,
   Phi.block<3, 3>(12, 0) = A2 - (A2*u-w2)*s;
 
   // Propogate the state covariance matrix.
+  // continuous time noise covariance matrix 
   Matrix<double, 21, 21> Q = Phi*G*state_server.continuous_noise_cov*
     G.transpose()*Phi.transpose()*dtime;
+  
+  // state_server.state_cov: the propagated convariance of imu state
   state_server.state_cov.block<21, 21>(0, 0) =
     Phi*state_server.state_cov.block<21, 21>(0, 0)*Phi.transpose() + Q;
 
+  // full uncertainty propagation
   if (state_server.cam_states.size() > 0) {
     state_server.state_cov.block(
         0, 21, 21, state_server.state_cov.cols()-21) =
@@ -697,7 +793,7 @@ void MsckfVio::predictNewState(const double& dt,
   Matrix3d dR_dt_transpose = quaternionToRotation(dq_dt).transpose();
   Matrix3d dR_dt2_transpose = quaternionToRotation(dq_dt2).transpose();
 
-  // k1 = f(tn, yn)
+  // k1 = f(tn, yn) q:R_w_imu
   Vector3d k1_v_dot = quaternionToRotation(q).transpose()*acc +
     IMUState::gravity;
   Vector3d k1_p_dot = v;
@@ -725,20 +821,6 @@ void MsckfVio::predictNewState(const double& dt,
   quaternionNormalize(q);
   v = v + dt/6*(k1_v_dot+2*k2_v_dot+2*k3_v_dot+k4_v_dot);
   p = p + dt/6*(k1_p_dot+2*k2_p_dot+2*k3_p_dot+k4_p_dot);
-  // Isometry3d T_imu_w = Isometry3d::Identity();
-  // T_imu_imu0 = Isometry3d::Identity();
-
-  // T_imu_w.linear() = quaternionToRotation(
-  //     state_server.imu_state.orientation).transpose();
-  // T_imu_w.translation() = state_server.imu_state.position;
-  // T_imu_imu0 = T_imu0_w.inverse() * T_imu_w;
-
-  // Vector4d quat = rotationToQuaternion(T_imu_w.linear());
-  // Vector3d t((T_imu_w.translation()));
-  // imu.resize(7);
-  // imu.segment(0, 3) = t;
-  // imu.segment(3, 4) = quat;
-  // cout << "imu: " << imu << endl;
   return;
 }
 
@@ -816,15 +898,57 @@ void MsckfVio::addFeatureObservations(
   for (const auto& feature : msg->features) {
     if (map_server.find(feature.id) == map_server.end()) {
       // This is a new feature.
+      vector<cv::Point2f> curr_cam0_points_undistorted(0);
+      vector<cv::Point2f> curr_cam1_points_undistorted(0);
+
+      vector<cv::Point2f> curr_cam0_points, curr_cam1_points;
+      curr_cam0_points.push_back(cv::Point2f(feature.u0, feature.v0));
+      curr_cam1_points.push_back(cv::Point2f(feature.u1, feature.v1));
+
+      undistortPoints(
+      curr_cam0_points, cam0_intrinsics, cam0_distortion_model,
+      cam0_distortion_coeffs, curr_cam0_points_undistorted);
+
+      undistortPoints(
+      curr_cam1_points, cam1_intrinsics, cam1_distortion_model,
+      cam1_distortion_coeffs, curr_cam1_points_undistorted);
+
       map_server[feature.id] = Feature(feature.id);
       map_server[feature.id].observations[state_id] =
-        Vector4d(feature.u0, feature.v0,
-            feature.u1, feature.v1);
+        Vector4d(curr_cam0_points_undistorted[0].x, curr_cam0_points_undistorted[0].y,
+            curr_cam1_points_undistorted[0].x, curr_cam1_points_undistorted[0].y);
+
+      // map_server[feature.id] = Feature(feature.id);
+      // map_server[feature.id].observations[state_id] =
+      //   Vector4d(feature.u0, feature.v0,
+      //       feature.u1, feature.v1);
+
     } else {
       // This is an old feature.
+
+      vector<cv::Point2f> curr_cam0_points_undistorted(0);
+      vector<cv::Point2f> curr_cam1_points_undistorted(0);
+
+      vector<cv::Point2f> curr_cam0_points, curr_cam1_points;
+      curr_cam0_points.push_back(cv::Point2f(feature.u0, feature.v0));
+      curr_cam1_points.push_back(cv::Point2f(feature.u1, feature.v1));
+
+      undistortPoints(
+      curr_cam0_points, cam0_intrinsics, cam0_distortion_model,
+      cam0_distortion_coeffs, curr_cam0_points_undistorted);
+
+      undistortPoints(
+      curr_cam1_points, cam1_intrinsics, cam1_distortion_model,
+      cam1_distortion_coeffs, curr_cam1_points_undistorted);
+
       map_server[feature.id].observations[state_id] =
-        Vector4d(feature.u0, feature.v0,
-            feature.u1, feature.v1);
+        Vector4d(curr_cam0_points_undistorted[0].x, curr_cam0_points_undistorted[0].y,
+            curr_cam1_points_undistorted[0].x, curr_cam1_points_undistorted[0].y);
+
+      // map_server[feature.id].observations[state_id] =
+      //   Vector4d(feature.u0, feature.v0,
+      //       feature.u1, feature.v1);
+      
       ++tracked_feature_num;
     }
   }
@@ -1497,12 +1621,11 @@ void MsckfVio::publish(const ros::Time& time) {
     if (gt_poses[gt_num].time <= state_server.imu_state.time){
         gt_num ++;
     }else{
-        gt.translation() = gt_poses[gt_num].p;
-        gt.linear() = gt_poses[gt_num].q.toRotationMatrix();
         break;
     }
   }
-  cout << "gt time: " << gt_poses[gt_num].time << "imu time: "<< state_server.imu_state.time << "current gt num: " << gt_num << endl;
+  gt.translation() = gt_poses[gt_num].p;
+  gt.linear() = gt_poses[gt_num].q.toRotationMatrix();
 
   nav_msgs::Odometry odom_gt;
   odom_gt.header.stamp = time;

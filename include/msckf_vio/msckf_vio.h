@@ -16,6 +16,10 @@
 #include <Eigen/Geometry>
 #include <boost/shared_ptr.hpp>
 
+#include <opencv2/core/core.hpp>
+#include <opencv2/opencv.hpp>
+#include <opencv2/video.hpp>
+
 #include <ros/ros.h>
 #include <sensor_msgs/Imu.h>
 #include <nav_msgs/Odometry.h>
@@ -77,10 +81,32 @@ class MsckfVio {
     };
 
 
+    std::string cam0_distortion_model;
+    cv::Vec2i cam0_resolution;
+    cv::Vec4d cam0_intrinsics;
+    cv::Vec4d cam0_distortion_coeffs;
+
+    std::string cam1_distortion_model;
+    cv::Vec2i cam1_resolution;
+    cv::Vec4d cam1_intrinsics;
+    cv::Vec4d cam1_distortion_coeffs;
+
+    
+
+    void undistortPoints(
+      const std::vector<cv::Point2f>& pts_in,
+      const cv::Vec4d& intrinsics,
+      const std::string& distortion_model,
+      const cv::Vec4d& distortion_coeffs,
+      std::vector<cv::Point2f>& pts_out,
+      const cv::Matx33d &rectification_matrix = cv::Matx33d::eye(),
+      const cv::Vec4d &new_intrinsics = cv::Vec4d(1,1,0,0));
+
     /*
      * @brief loadParameters
      *    Load parameters from the parameter server.
      */
+    
     bool loadParameters();
 
     /*
