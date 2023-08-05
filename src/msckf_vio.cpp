@@ -58,14 +58,18 @@ MsckfVio::MsckfVio(ros::NodeHandle& pnh):
 }
 
 bool MsckfVio::loadParameters() {
-
+    // gravity
+    if(gt_type == "simulation"){
+      IMUState::gravity = Vector3d(0, 0, -9.8);
+    }else{
+      IMUState::gravity = Vector3d(0, 0, -9.81);
+    }
     // gt
     ifstream ifs_gt;
-    // string gt_path_full = "/home/ldd/euroc/V1_01_easy/mav0/state_groundtruth_estimate0/V1_01_easy.txt";
-    // string gt_path_full = "/home/ldd/euroc/V2_01_easy/mav0/state_groundtruth_estimate0/gt.txt";
-    string gt_path_full = "/home/ldd/bias_esti_ws/src/bias_esti/trajectory/imu_in_simulation_bias_small/imu.txt";
+    nh.param<string>("gt_path", gt_path, "/home/ldd/euroc/V1_01_easy/mav0/state_groundtruth_estimate0/V1_01_easy.txt");
+    nh.param<string>("gt_type", gt_type, "euroc");
 
-    ifs_gt.open(gt_path_full, ios::in);  //读取文件
+    ifs_gt.open(gt_path, ios::in);  //读取文件
     if(!ifs_gt.is_open())
     {
         cout << "gt ifstream open file error!\n";
@@ -76,50 +80,95 @@ bool MsckfVio::loadParameters() {
         lines_gt.push_back(line_gt);   
     ifs_gt.close();
     Gt gt_pose;
-    string s_gt = " ";
-    string s_euroc = ",";
+    string s_gt;
     vector<std::string> vec_gt;
 
     // euroc 
-    // for(int i=1; i<lines_gt.size(); ++i){
-    //     vec_gt = split_vec(lines_gt[i],s_euroc);
-    //     gt_pose.time = std::stold(vec_gt[0])*1e-9;
-    //     gt_pose.p << std::stod(vec_gt[1]), std::stod(vec_gt[2]), std::stod(vec_gt[3]);
-    //     gt_pose.q.x() = std::stod(vec_gt[5]);
-    //     gt_pose.q.y() = std::stod(vec_gt[6]);
-    //     gt_pose.q.z() = std::stod(vec_gt[7]);
-    //     gt_pose.q.w() = std::stod(vec_gt[4]);
-    //     gt_pose.vel = Eigen::Vector3d(std::stod(vec_gt[8]), std::stod(vec_gt[9]), std::stod(vec_gt[10]));
-    //     gt_poses.push_back(gt_pose);
-    // }
+    if(gt_type == "euroc"){
+      s_gt = ",";
+      for(int i=1; i<lines_gt.size(); ++i){
+        vec_gt = split_vec(lines_gt[i],s_gt);
+        gt_pose.time = std::stold(vec_gt[0])*1e-9;
+        gt_pose.p << std::stod(vec_gt[1]), std::stod(vec_gt[2]), std::stod(vec_gt[3]);
+        gt_pose.q.x() = std::stod(vec_gt[5]);
+        gt_pose.q.y() = std::stod(vec_gt[6]);
+        gt_pose.q.z() = std::stod(vec_gt[7]);
+        gt_pose.q.w() = std::stod(vec_gt[4]);
+        gt_pose.vel = Eigen::Vector3d(std::stod(vec_gt[8]), std::stod(vec_gt[9]), std::stod(vec_gt[10]));
+        gt_poses.push_back(gt_pose);
+      }
+    }
+    
 
     // euroc v1
-    // for(int i=1; i<lines_gt.size(); ++i){
-    //     vec_gt = split_vec(lines_gt[i],s_gt);
-    //     gt_pose.time = std::stold(vec_gt[0]);
-    //     gt_pose.p << std::stod(vec_gt[1]), std::stod(vec_gt[2]), std::stod(vec_gt[3]);
-    //     gt_pose.q.x() = std::stod(vec_gt[4]);
-    //     gt_pose.q.y() = std::stod(vec_gt[5]);
-    //     gt_pose.q.z() = std::stod(vec_gt[6]);
-    //     gt_pose.q.w() = std::stod(vec_gt[7]);
-    //     gt_poses.push_back(gt_pose);
-    // }
+    if(gt_type == "eurocv1"){
+      s_gt = " ";
+      for(int i=1; i<lines_gt.size(); ++i){
+          vec_gt = split_vec(lines_gt[i],s_gt);
+          gt_pose.time = std::stold(vec_gt[0]);
+          gt_pose.p << std::stod(vec_gt[1]), std::stod(vec_gt[2]), std::stod(vec_gt[3]);
+          gt_pose.q.x() = std::stod(vec_gt[4]);
+          gt_pose.q.y() = std::stod(vec_gt[5]);
+          gt_pose.q.z() = std::stod(vec_gt[6]);
+          gt_pose.q.w() = std::stod(vec_gt[7]);
+          gt_poses.push_back(gt_pose);
+        }
+    }
 
     // simulation dataset
-    for(int i=1; i<lines_gt.size(); ++i){
-        vec_gt = split_vec(lines_gt[i],s_gt);
-        gt_pose.time = std::stold(vec_gt[0]);
-        gt_pose.p << std::stod(vec_gt[5]), std::stod(vec_gt[6]), std::stod(vec_gt[7]);
+    if(gt_type == "simulation"){
+      s_gt = " ";
+      for(int i=1; i<lines_gt.size(); ++i){
+          vec_gt = split_vec(lines_gt[i],s_gt);
+          gt_pose.time = std::stold(vec_gt[0]);
+          gt_pose.p << std::stod(vec_gt[5]), std::stod(vec_gt[6]), std::stod(vec_gt[7]);
 
-        gt_pose.q.x() = std::stod(vec_gt[2]);
-        gt_pose.q.y() = std::stod(vec_gt[3]);
-        gt_pose.q.z() = std::stod(vec_gt[4]);
-        gt_pose.q.w() = std::stod(vec_gt[1]);
-        gt_pose.vel = Vector3d(std::stod(vec_gt[8]), std::stod(vec_gt[9]), std::stod(vec_gt[10]));
-        gt_poses.push_back(gt_pose);
+          gt_pose.q.x() = std::stod(vec_gt[2]);
+          gt_pose.q.y() = std::stod(vec_gt[3]);
+          gt_pose.q.z() = std::stod(vec_gt[4]);
+          gt_pose.q.w() = std::stod(vec_gt[1]);
+          gt_pose.vel = Vector3d(std::stod(vec_gt[8]), std::stod(vec_gt[9]), std::stod(vec_gt[10]));
+          gt_poses.push_back(gt_pose);
+      }
     }
 
   // Frame id
+
+  std::vector<double> cam0_intrinsics_temp(4);
+  nh.getParam("cam0/intrinsics", cam0_intrinsics_temp);
+  cam0_intrinsics[0] = cam0_intrinsics_temp[0];
+  cam0_intrinsics[1] = cam0_intrinsics_temp[1];
+  cam0_intrinsics[2] = cam0_intrinsics_temp[2];
+  cam0_intrinsics[3] = cam0_intrinsics_temp[3];
+
+  std::vector<double> cam1_intrinsics_temp(4);
+  nh.getParam("cam1/intrinsics", cam1_intrinsics_temp);
+  cam1_intrinsics[0] = cam1_intrinsics_temp[0];
+  cam1_intrinsics[1] = cam1_intrinsics_temp[1];
+  cam1_intrinsics[2] = cam1_intrinsics_temp[2];
+  cam1_intrinsics[3] = cam1_intrinsics_temp[3];
+
+  nh.param<string>("cam0/distortion_model",
+      cam0_distortion_model, string("radtan"));
+  nh.param<string>("cam1/distortion_model",
+      cam1_distortion_model, string("radtan"));
+
+  vector<double> cam0_distortion_coeffs_temp(4);
+  nh.getParam("cam0/distortion_coeffs",
+      cam0_distortion_coeffs_temp);
+  cam0_distortion_coeffs[0] = cam0_distortion_coeffs_temp[0];
+  cam0_distortion_coeffs[1] = cam0_distortion_coeffs_temp[1];
+  cam0_distortion_coeffs[2] = cam0_distortion_coeffs_temp[2];
+  cam0_distortion_coeffs[3] = cam0_distortion_coeffs_temp[3];
+
+  vector<double> cam1_distortion_coeffs_temp(4);
+  nh.getParam("cam1/distortion_coeffs",
+      cam1_distortion_coeffs_temp);
+  cam1_distortion_coeffs[0] = cam1_distortion_coeffs_temp[0];
+  cam1_distortion_coeffs[1] = cam1_distortion_coeffs_temp[1];
+  cam1_distortion_coeffs[2] = cam1_distortion_coeffs_temp[2];
+  cam1_distortion_coeffs[3] = cam1_distortion_coeffs_temp[3];
+
   nh.param<string>("fixed_frame_id", fixed_frame_id, "world");
   nh.param<string>("child_frame_id", child_frame_id, "robot");
   nh.param<bool>("publish_tf", publish_tf, true);
@@ -297,7 +346,7 @@ void MsckfVio::imuCallback(
   imu_msg_buffer.push_back(*msg);
 
   if (!is_gravity_set) {
-    if (imu_msg_buffer.size() < 200) return;
+    // if (imu_msg_buffer.size() < 200) return;
     //if (imu_msg_buffer.size() < 10) return;
     initializeGravityAndBias(msg);
     is_gravity_set = true;
@@ -340,6 +389,7 @@ void MsckfVio::initializeGravityAndBias(const sensor_msgs::ImuConstPtr& msg) {
   //   gravity_imu, -IMUState::gravity);
   // state_server.imu_state.orientation =
   //   rotationToQuaternion(q0_i_w.toRotationMatrix().transpose());
+
   double time = msg->header.stamp.toSec();
   while(gt_num < gt_poses.size()){
         if (gt_poses[gt_num].time < time){
@@ -350,9 +400,12 @@ void MsckfVio::initializeGravityAndBias(const sensor_msgs::ImuConstPtr& msg) {
     }
     gt_init = gt_num; 
   
+  cout << "gt_init: " << gt_init << endl;
+  cout << gt_poses[gt_init].p.transpose() << endl;
   state_server.imu_state.orientation =
     rotationToQuaternion(gt_poses[gt_init].q.toRotationMatrix().cast<double>().transpose()); //T_w_imu
   state_server.imu_state.position = gt_poses[gt_init].p.cast<double>(); //p_imu_w
+  state_server.imu_state.velocity = gt_poses[gt_init].vel.cast<double>();
   return;
 }
 
@@ -432,7 +485,7 @@ bool MsckfVio::resetCallback(
 
 void MsckfVio::featureCallback(
     const CameraMeasurementConstPtr& msg) {
-
+  
   // Return if the gravity vector has not been set.
   if (!is_gravity_set) return;
 
@@ -454,12 +507,14 @@ void MsckfVio::featureCallback(
   batchImuProcessing(msg->header.stamp.toSec());
   double imu_processing_time = (
       ros::Time::now()-start_time).toSec();
+  // cout << "finish imu process!" << endl;
 
   // Augment the state vector.
   start_time = ros::Time::now();
   stateAugmentation(msg->header.stamp.toSec());
   double state_augmentation_time = (
       ros::Time::now()-start_time).toSec();
+  // cout << "stateAugmentation!" << endl;
 
   // Add new observations for existing features or new
   // features in the map server.
@@ -491,17 +546,17 @@ void MsckfVio::featureCallback(
   double processing_end_time = ros::Time::now().toSec();
   double processing_time =
     processing_end_time - processing_start_time;
-  if (processing_time > 1.0/frame_rate) {
-    ++critical_time_cntr;
-    ROS_INFO("\033[1;31mTotal processing time %f/%d...\033[0m",
-        processing_time, critical_time_cntr);
-    printf("Remove lost features time: %f/%f\n",
-        remove_lost_features_time, remove_lost_features_time/processing_time);
-    printf("Remove camera states time: %f/%f\n",
-        prune_cam_states_time, prune_cam_states_time/processing_time);
-    //printf("Publish time: %f/%f\n",
-    //    publish_time, publish_time/processing_time);
-  }
+  // if (processing_time > 1.0/frame_rate) {
+  //   ++critical_time_cntr;
+  //   ROS_INFO("\033[1;31mTotal processing time %f/%d...\033[0m",
+  //       processing_time, critical_time_cntr);
+  //   printf("Remove lost features time: %f/%f\n",
+  //       remove_lost_features_time, remove_lost_features_time/processing_time);
+  //   printf("Remove camera states time: %f/%f\n",
+  //       prune_cam_states_time, prune_cam_states_time/processing_time);
+  //   //printf("Publish time: %f/%f\n",
+  //   //    publish_time, publish_time/processing_time);
+  // }
 
   return;
 }
@@ -730,6 +785,7 @@ void MsckfVio::predictNewState(const double& dt,
   // k1 = f(tn, yn)
   Vector3d k1_v_dot = quaternionToRotation(q).transpose()*acc +
     IMUState::gravity;
+
   Vector3d k1_p_dot = v;
 
   // k2 = f(tn+dt/2, yn+k1*dt/2)
@@ -834,6 +890,8 @@ void MsckfVio::stateAugmentation(const double& time) {
   return;
 }
 
+
+
 void MsckfVio::undistortPoints(
     const vector<cv::Point2f>& pts_in,
     const cv::Vec4d& intrinsics,
@@ -877,64 +935,66 @@ void MsckfVio::addFeatureObservations(
   StateIDType state_id = state_server.imu_state.id;
   int curr_feature_num = map_server.size();
   int tracked_feature_num = 0;
-
+  
   // Add new observations for existing features or new
-  // features in the map server.
+  // features in the map server.cam1_intrinsic
   for (const auto& feature : msg->features) {
     if (map_server.find(feature.id) == map_server.end()) {
       // This is a new feature.
+      if(gt_type == "simulation"){
+        vector<cv::Point2f> curr_cam0_points_undistorted(0);
+        vector<cv::Point2f> curr_cam1_points_undistorted(0);
 
-      vector<cv::Point2f> curr_cam0_points_undistorted(0);
-      vector<cv::Point2f> curr_cam1_points_undistorted(0);
+        vector<cv::Point2f> curr_cam0_points, curr_cam1_points;
+        curr_cam0_points.push_back(cv::Point2f(feature.u0, feature.v0));
+        curr_cam1_points.push_back(cv::Point2f(feature.u1, feature.v1));
 
-      vector<cv::Point2f> curr_cam0_points, curr_cam1_points;
-      curr_cam0_points.push_back(cv::Point2f(feature.u0, feature.v0));
-      curr_cam1_points.push_back(cv::Point2f(feature.u1, feature.v1));
+        undistortPoints(
+        curr_cam0_points, cam0_intrinsics, cam0_distortion_model,
+        cam0_distortion_coeffs, curr_cam0_points_undistorted);
 
-      undistortPoints(
-      curr_cam0_points, cam0_intrinsics, cam0_distortion_model,
-      cam0_distortion_coeffs, curr_cam0_points_undistorted);
+        undistortPoints(
+        curr_cam1_points, cam1_intrinsics, cam1_distortion_model,
+        cam1_distortion_coeffs, curr_cam1_points_undistorted);
 
-      undistortPoints(
-      curr_cam1_points, cam1_intrinsics, cam1_distortion_model,
-      cam1_distortion_coeffs, curr_cam1_points_undistorted);
-
-      map_server[feature.id] = Feature(feature.id);
-      map_server[feature.id].observations[state_id] = 
-       Vector4d(curr_cam0_points_undistorted[0].x, curr_cam0_points_undistorted[0].y,
-            curr_cam1_points_undistorted[0].x, curr_cam1_points_undistorted[0].y);
-
-      // map_server[feature.id] = Feature(feature.id);
-      // map_server[feature.id].observations[state_id] =
-      //   Vector4d(feature.u0, feature.v0,
-      //       feature.u1, feature.v1);
+        map_server[feature.id] = Feature(feature.id);
+        map_server[feature.id].observations[state_id] = 
+        Vector4d(curr_cam0_points_undistorted[0].x, curr_cam0_points_undistorted[0].y,
+              curr_cam1_points_undistorted[0].x, curr_cam1_points_undistorted[0].y);
+      }else{
+        map_server[feature.id] = Feature(feature.id);
+        map_server[feature.id].observations[state_id] =
+          Vector4d(feature.u0, feature.v0,
+              feature.u1, feature.v1);
+      }      
+      
     } else {
       // This is an old feature.
+      if(gt_type == "simulation"){
+        vector<cv::Point2f> curr_cam0_points_undistorted(0);
+        vector<cv::Point2f> curr_cam1_points_undistorted(0);
 
-      vector<cv::Point2f> curr_cam0_points_undistorted(0);
-      vector<cv::Point2f> curr_cam1_points_undistorted(0);
+        vector<cv::Point2f> curr_cam0_points, curr_cam1_points;
+        curr_cam0_points.push_back(cv::Point2f(feature.u0, feature.v0));
+        curr_cam1_points.push_back(cv::Point2f(feature.u1, feature.v1));
 
-      vector<cv::Point2f> curr_cam0_points, curr_cam1_points;
-      curr_cam0_points.push_back(cv::Point2f(feature.u0, feature.v0));
-      curr_cam1_points.push_back(cv::Point2f(feature.u1, feature.v1));
+        undistortPoints(
+        curr_cam0_points, cam0_intrinsics, cam0_distortion_model,
+        cam0_distortion_coeffs, curr_cam0_points_undistorted);
 
-      undistortPoints(
-      curr_cam0_points, cam0_intrinsics, cam0_distortion_model,
-      cam0_distortion_coeffs, curr_cam0_points_undistorted);
+        undistortPoints(
+        curr_cam1_points, cam1_intrinsics, cam1_distortion_model,
+        cam1_distortion_coeffs, curr_cam1_points_undistorted);
 
-      undistortPoints(
-      curr_cam1_points, cam1_intrinsics, cam1_distortion_model,
-      cam1_distortion_coeffs, curr_cam1_points_undistorted);
-
-      map_server[feature.id] = Feature(feature.id);
-      map_server[feature.id].observations[state_id] = 
-       Vector4d(curr_cam0_points_undistorted[0].x, curr_cam0_points_undistorted[0].y,
-            curr_cam1_points_undistorted[0].x, curr_cam1_points_undistorted[0].y);
-
-      // map_server[feature.id].observations[state_id] =
-      //   Vector4d(feature.u0, feature.v0,
-      //       feature.u1, feature.v1);
-
+        map_server[feature.id].observations[state_id] = 
+        Vector4d(curr_cam0_points_undistorted[0].x, curr_cam0_points_undistorted[0].y,
+              curr_cam1_points_undistorted[0].x, curr_cam1_points_undistorted[0].y);
+      }else{
+        map_server[feature.id].observations[state_id] =
+        Vector4d(feature.u0, feature.v0,
+            feature.u1, feature.v1);
+      }
+      
       ++tracked_feature_num;
     }
   }
@@ -1147,7 +1207,8 @@ void MsckfVio::measurementUpdate(
   state_server.imu_state.velocity += delta_x_imu.segment<3>(6);
   state_server.imu_state.acc_bias += delta_x_imu.segment<3>(9);
   state_server.imu_state.position += delta_x_imu.segment<3>(12);
-
+  cout << "delta_x: " << delta_x_imu.segment<3>(12) << endl;
+  
   const Vector4d dq_extrinsic =
     smallAngleQuaternion(delta_x_imu.segment<3>(15));
   state_server.imu_state.R_imu_cam0 = quaternionToRotation(
@@ -1164,7 +1225,7 @@ void MsckfVio::measurementUpdate(
         dq_cam, cam_state_iter->second.orientation);
     cam_state_iter->second.position += delta_x_cam.tail<3>();
   }
-
+  
   // Update state covariance.
   MatrixXd I_KH = MatrixXd::Identity(K.rows(), H_thin.cols()) - K*H_thin;
   //state_server.state_cov = I_KH*state_server.state_cov*I_KH.transpose() +
@@ -1236,6 +1297,7 @@ void MsckfVio::removeLostFeatures() {
 
     jacobian_row_size += 4*feature.observations.size() - 3;
     processed_feature_ids.push_back(feature.id);
+    // cout << "process feature ids: " << processed_feature_ids.size() << endl;
   }
 
   //cout << "invalid/processed feature #: " <<
@@ -1268,6 +1330,7 @@ void MsckfVio::removeLostFeatures() {
     featureJacobian(feature.id, cam_state_ids, H_xj, r_j);
 
     if (gatingTest(H_xj, r_j, cam_state_ids.size()-1)) {
+    // if (true) {
       H_x.block(stack_cntr, 0, H_xj.rows(), H_xj.cols()) = H_xj;
       r.segment(stack_cntr, r_j.rows()) = r_j;
       stack_cntr += H_xj.rows();
@@ -1614,7 +1677,7 @@ void MsckfVio::publish(const ros::Time& time) {
   gt.translation() = gt_poses[gt_num].p;
   gt.linear() = gt_poses[gt_num].q.toRotationMatrix();
 
-  cout << "gt time: " << gt_poses[gt_num].time << "imu time: "<< state_server.imu_state.time << "current gt num: " << gt_num << endl;
+  // cout << "gt time: " << gt_poses[gt_num].time << "imu time: "<< state_server.imu_state.time << "current gt num: " << gt_num << endl;
 
   nav_msgs::Odometry odom_gt;
   odom_gt.header.stamp = time;

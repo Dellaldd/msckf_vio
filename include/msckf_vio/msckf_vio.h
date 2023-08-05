@@ -91,7 +91,6 @@ class MsckfVio {
     cv::Vec4d cam1_intrinsics;
     cv::Vec4d cam1_distortion_coeffs;
 
-    
 
     void undistortPoints(
       const std::vector<cv::Point2f>& pts_in,
@@ -241,6 +240,8 @@ void initializeGravityAndBias(const sensor_msgs::ImuConstPtr& msg);
     // Frame id
     std::string fixed_frame_id;
     std::string child_frame_id;
+
+    std::string gt_path, gt_type;
 
     // Whether to publish tf or not.
     bool publish_tf;

@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from scipy.spatial.transform import Rotation as R
 
 def main():
-    fold = "/home/ldd/msckf_real/src/msckf_vio/backend_result/backend/imu_in_simulation_bias_small/"
+    fold = "/home/ldd/msckf_real/src/msckf_vio/backend_result/simulation/simulation_bias/"
     gt_file_name = "stamped_groundtruth.txt"
     esti_file_name = "stamped_traj_estimate.txt"
     save_name = "backend.png"
@@ -29,11 +29,11 @@ def main():
     gt = []
     for i in range(end):
         q = [data_esti[i, 4],data_esti[i, 5], data_esti[i, 6], data_esti[i, 7]]
-        euler = R.from_quat(q).as_euler("zyx", degrees= True)
+        euler = R.from_quat(q).as_euler("xyz", degrees= True)
         esti.append(np.array([data_esti[i,0], data_esti[i,1], data_esti[i,2], data_esti[i,3], euler[0], euler[1], euler[2]]))
         
         q = [data_gt[i, 4], data_gt[i, 5], data_gt[i, 6], data_gt[i, 7]]
-        euler = R.from_quat(q).as_euler("zyx", degrees= True)
+        euler = R.from_quat(q).as_euler("xyz", degrees= True)
         
         gt.append(np.array([data_gt[i,0], data_gt[i,1], data_gt[i,2], data_gt[i,3], euler[0], euler[1], euler[2]]))
         
