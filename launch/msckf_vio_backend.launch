@@ -57,12 +57,12 @@
       <param name="initial_covariance/acc_bias" value="0.2"/>
       <param name="initial_covariance/extrinsic_rotation_cov" value="3.0462e-4"/>
       <param name="initial_covariance/extrinsic_translation_cov" value="2.5e-5"/>
-<!-- 
-      <param name="gt_type" value="simulation"/>
-      <param name="gt_path" value="/home/ldd/bias_esti_ws/src/bias_esti/trajectory/simulation_bias/imu.txt"/> -->
 
-      <param name="gt_type" value="eurocv1"/>
-      <param name="gt_path" value="/home/ldd/euroc/V1_01_easy/mav0/state_groundtruth_estimate0/V1_01_easy.txt"/>
+      <param name="gt_type" value="simulation"/>
+      <param name="gt_path" value="/home/ldd/bias_esti_ws/src/bias_esti/trajectory/simulation_bias/imu.txt"/> 
+
+      <!-- <param name="gt_type" value="eurocv1"/>
+      <param name="gt_path" value="/home/ldd/euroc/V1_01_easy/mav0/state_groundtruth_estimate0/V1_01_easy.txt"/> -->
 
       <remap from="~imu" to="/imu"/>
       <remap from="~features" to="/features"/>

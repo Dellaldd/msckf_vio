@@ -58,17 +58,19 @@ MsckfVio::MsckfVio(ros::NodeHandle& pnh):
 }
 
 bool MsckfVio::loadParameters() {
+    
+    // gt
+    ifstream ifs_gt;
+    nh.param<string>("gt_path", gt_path, "/home/ldd/euroc/V1_01_easy/mav0/state_groundtruth_estimate0/V1_01_easy.txt");
+    nh.param<string>("gt_type", gt_type, "euroc");
+
     // gravity
     if(gt_type == "simulation"){
       IMUState::gravity = Vector3d(0, 0, -9.8);
     }else{
       IMUState::gravity = Vector3d(0, 0, -9.81);
     }
-    // gt
-    ifstream ifs_gt;
-    nh.param<string>("gt_path", gt_path, "/home/ldd/euroc/V1_01_easy/mav0/state_groundtruth_estimate0/V1_01_easy.txt");
-    nh.param<string>("gt_type", gt_type, "euroc");
-
+    
     ifs_gt.open(gt_path, ios::in);  //读取文件
     if(!ifs_gt.is_open())
     {
