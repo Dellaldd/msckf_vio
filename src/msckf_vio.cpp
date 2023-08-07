@@ -402,12 +402,15 @@ void MsckfVio::initializeGravityAndBias(const sensor_msgs::ImuConstPtr& msg) {
     }
     gt_init = gt_num; 
   
-  cout << "gt_init: " << gt_init << endl;
-  cout << gt_poses[gt_init].p.transpose() << endl;
-  state_server.imu_state.orientation =
-    rotationToQuaternion(gt_poses[gt_init].q.toRotationMatrix().cast<double>().transpose()); //T_w_imu
+ 
+  // state_server.imu_state.orientation =
+  //   rotationToQuaternion(gt_poses[gt_init].q.toRotationMatrix().cast<double>().transpose()); //T_imu_w
+
+  state_server.imu_state.orientation = Vector4d(gt_poses[gt_init].q.x(), gt_poses[gt_init].q.y(), gt_poses[gt_init].q.z(), gt_poses[gt_init].q.w());
   state_server.imu_state.position = gt_poses[gt_init].p.cast<double>(); //p_imu_w
   state_server.imu_state.velocity = gt_poses[gt_init].vel.cast<double>();
+  cout << "gt_init: " << gt_init << endl;
+  cout << gt_poses[gt_init].p.transpose() << " " << state_server.imu_state.orientation.transpose() << endl;
   return;
 }
 
@@ -1594,7 +1597,7 @@ void MsckfVio::publish(const ros::Time& time) {
   const IMUState& imu_state = state_server.imu_state;
   Eigen::Isometry3d T_i_w = Eigen::Isometry3d::Identity();
   T_i_w.linear() = quaternionToRotation(
-      imu_state.orientation).transpose();
+      imu_state.orientation).transpose();// imu_state.orientation R_i_w
   T_i_w.translation() = imu_state.position;
 
   Eigen::Isometry3d T_b_w = IMUState::T_imu_body * T_i_w *
