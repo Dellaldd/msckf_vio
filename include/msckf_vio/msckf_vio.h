@@ -139,7 +139,7 @@ class MsckfVio {
      *    Initialize the IMU bias and initial orientation
      *    based on the first few IMU readings.
      */
-void initializeGravityAndBias(const sensor_msgs::ImuConstPtr& msg);
+void initializeGravityAndBias(const CameraMeasurementConstPtr& msg);
 
     /*
      * @biref resetCallback

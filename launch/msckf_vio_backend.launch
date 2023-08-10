@@ -43,24 +43,24 @@
 
       <param name="noise/gyro" value="0"/>
       <param name="noise/acc" value="0"/>
-      <param name="noise/gyro_bias" value="0.01"/>
-      <param name="noise/acc_bias" value="0.2"/>
-      <param name="noise/feature" value="0.035"/>
+      <param name="noise/gyro_bias" value="0"/>
+      <param name="noise/acc_bias" value="0"/>
+      <param name="noise/feature" value="0"/>
 
       <param name="initial_state/velocity/x" value="0.0"/>
       <param name="initial_state/velocity/y" value="0.0"/>
       <param name="initial_state/velocity/z" value="0.0"/>
 
       <!-- These values should be covariance -->
-      <param name="initial_covariance/velocity" value="0.25"/>
-      <param name="initial_covariance/gyro_bias" value="0.01"/>
-      <param name="initial_covariance/acc_bias" value="0.2"/>
-      <param name="initial_covariance/extrinsic_rotation_cov" value="3.0462e-4"/>
-      <param name="initial_covariance/extrinsic_translation_cov" value="2.5e-5"/>
+      <param name="initial_covariance/velocity" value="0"/>
+      <param name="initial_covariance/gyro_bias" value="0"/>
+      <param name="initial_covariance/acc_bias" value="0"/>
+      <param name="initial_covariance/extrinsic_rotation_cov" value="0"/>
+      <param name="initial_covariance/extrinsic_translation_cov" value="0"/>
 
       <param name="gt_type" value="simulation"/>
-      <param name="gt_path" value="/home/ldd/bias_esti_ws/src/bias_esti/trajectory/simulation_bias/imu.txt"/> 
-
+      <param name="gt_path" value="/home/ldd/bias_esti_ws/src/bias_esti/trajectory/psi_500/imu.txt"/> 
+      <!-- <param name="gt_path" value="/home/ldd/bias_esti_ws/src/bias_esti/trajectory/imu_hz_400/imu.txt"/> -->
       <!-- <param name="gt_type" value="eurocv1"/>
       <param name="gt_path" value="/home/ldd/euroc/V1_01_easy/mav0/state_groundtruth_estimate0/V1_01_easy.txt"/> -->
 

@@ -8,7 +8,7 @@
 #include <Eigen/Dense>
 #include <Eigen/Geometry>
 
-#define GRAVITY_ACCELERATION 9.8
+#define GRAVITY_ACCELERATION 9.81
 
 namespace msckf_vio {
 
