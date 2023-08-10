@@ -59,7 +59,7 @@
       <param name="initial_covariance/extrinsic_translation_cov" value="2.5e-5"/>
 
       <param name="gt_type" value="simulation"/>
-      <param name="gt_path" value="/home/ldd/bias_esti_ws/src/bias_esti/trajectory/simulation_bias/imu.txt"/> 
+      <param name="gt_path" value="/home/ldd/bias_esti_ws/src/bias_esti/trajectory/psi_500/imu.txt"/> 
 
       <!-- <param name="gt_type" value="eurocv1"/>
       <param name="gt_path" value="/home/ldd/euroc/V1_01_easy/mav0/state_groundtruth_estimate0/V1_01_easy.txt"/> -->
