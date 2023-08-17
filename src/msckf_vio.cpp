@@ -402,6 +402,7 @@ void MsckfVio::initializeGravityAndBias(const sensor_msgs::ImuConstPtr& msg) {
     }
     gt_init = gt_num; 
   
+  state_server.imu_state.time = gt_poses[gt_init].time;
   cout << "gt_init: " << gt_init << endl;
   cout << gt_poses[gt_init].p.transpose() << endl;
   state_server.imu_state.orientation =
@@ -636,6 +637,8 @@ void MsckfVio::batchImuProcessing(const double& time_bound) {
   for (const auto& imu_msg : imu_msg_buffer) {
     double imu_time = imu_msg.header.stamp.toSec();
     if (imu_time < state_server.imu_state.time) {
+      tf::vectorMsgToEigen(imu_msg.angular_velocity, gyro_0);
+      tf::vectorMsgToEigen(imu_msg.linear_acceleration, acc_0);
       ++used_imu_msg_cntr;
       continue;
     }
@@ -648,6 +651,9 @@ void MsckfVio::batchImuProcessing(const double& time_bound) {
 
     // Execute process model.
     processModel(imu_time, m_gyro, m_acc);
+    // processModel(imu_time, gyro_0, acc_0);
+    gyro_0 = m_gyro;
+    acc_0 = m_acc;
     ++used_imu_msg_cntr;
   }
 
@@ -943,7 +949,7 @@ void MsckfVio::addFeatureObservations(
   for (const auto& feature : msg->features) {
     if (map_server.find(feature.id) == map_server.end()) {
       // This is a new feature.
-      if(gt_type == "simulation"){
+      if(gt_type == "test"){
         vector<cv::Point2f> curr_cam0_points_undistorted(0);
         vector<cv::Point2f> curr_cam1_points_undistorted(0);
 
@@ -972,7 +978,7 @@ void MsckfVio::addFeatureObservations(
       
     } else {
       // This is an old feature.
-      if(gt_type == "simulation"){
+      if(gt_type == "test"){
         vector<cv::Point2f> curr_cam0_points_undistorted(0);
         vector<cv::Point2f> curr_cam1_points_undistorted(0);
 

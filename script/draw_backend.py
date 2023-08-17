@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from scipy.spatial.transform import Rotation as R
 
 def main():
-    fold = "/home/ldd/msckf_real/src/msckf_vio/backend_result/simulation/psi_500/"
+    fold = "/home/ldd/msckf_real/src/msckf_vio/backend_result/simulation/enu_uv/"
     gt_file_name = "stamped_groundtruth.txt"
     esti_file_name = "stamped_traj_estimate.txt"
     save_name = "backend.png"

@@ -261,7 +261,7 @@ void initializeGravityAndBias(const sensor_msgs::ImuConstPtr& msg);
     Eigen::Isometry3d mocap_initial_frame, T_imu0_w, T_imu_imu0;
     std::vector<Gt> gt_poses;
     int gt_num = 0, gt_init = 0;
-    
+    Eigen::Vector3d gyro_0, acc_0;
 };
 
 typedef MsckfVio::Ptr MsckfVioPtr;
