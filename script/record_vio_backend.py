@@ -13,7 +13,7 @@ import threading
 
 class Logger:
     def __init__(self):
-        self.fold = "/home/ldd/msckf_real/src/msckf_vio/backend_result/simulation/enu_uv/"
+        self.fold = "/home/ldd/msckf_real/src/msckf_vio/backend_result/simulation/enu_noise_w_1_psi_big_median/"
         self.f_gt = open(self.fold + "stamped_groundtruth.txt", 'w')
         self.f_esti = open(self.fold + "stamped_traj_estimate.txt", 'w')
         

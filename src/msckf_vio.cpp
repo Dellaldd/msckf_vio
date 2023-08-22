@@ -393,6 +393,7 @@ void MsckfVio::initializeGravityAndBias(const sensor_msgs::ImuConstPtr& msg) {
   //   rotationToQuaternion(q0_i_w.toRotationMatrix().transpose());
 
   double time = msg->header.stamp.toSec();
+  
   while(gt_num < gt_poses.size()){
         if (gt_poses[gt_num].time < time){
             gt_num ++;
@@ -949,60 +950,17 @@ void MsckfVio::addFeatureObservations(
   for (const auto& feature : msg->features) {
     if (map_server.find(feature.id) == map_server.end()) {
       // This is a new feature.
-      if(gt_type == "test"){
-        vector<cv::Point2f> curr_cam0_points_undistorted(0);
-        vector<cv::Point2f> curr_cam1_points_undistorted(0);
-
-        vector<cv::Point2f> curr_cam0_points, curr_cam1_points;
-        curr_cam0_points.push_back(cv::Point2f(feature.u0, feature.v0));
-        curr_cam1_points.push_back(cv::Point2f(feature.u1, feature.v1));
-
-        undistortPoints(
-        curr_cam0_points, cam0_intrinsics, cam0_distortion_model,
-        cam0_distortion_coeffs, curr_cam0_points_undistorted);
-
-        undistortPoints(
-        curr_cam1_points, cam1_intrinsics, cam1_distortion_model,
-        cam1_distortion_coeffs, curr_cam1_points_undistorted);
-
-        map_server[feature.id] = Feature(feature.id);
-        map_server[feature.id].observations[state_id] = 
-        Vector4d(curr_cam0_points_undistorted[0].x, curr_cam0_points_undistorted[0].y,
-              curr_cam1_points_undistorted[0].x, curr_cam1_points_undistorted[0].y);
-      }else{
-        map_server[feature.id] = Feature(feature.id);
-        map_server[feature.id].observations[state_id] =
-          Vector4d(feature.u0, feature.v0,
-              feature.u1, feature.v1);
-      }      
       
-    } else {
-      // This is an old feature.
-      if(gt_type == "test"){
-        vector<cv::Point2f> curr_cam0_points_undistorted(0);
-        vector<cv::Point2f> curr_cam1_points_undistorted(0);
-
-        vector<cv::Point2f> curr_cam0_points, curr_cam1_points;
-        curr_cam0_points.push_back(cv::Point2f(feature.u0, feature.v0));
-        curr_cam1_points.push_back(cv::Point2f(feature.u1, feature.v1));
-
-        undistortPoints(
-        curr_cam0_points, cam0_intrinsics, cam0_distortion_model,
-        cam0_distortion_coeffs, curr_cam0_points_undistorted);
-
-        undistortPoints(
-        curr_cam1_points, cam1_intrinsics, cam1_distortion_model,
-        cam1_distortion_coeffs, curr_cam1_points_undistorted);
-
-        map_server[feature.id].observations[state_id] = 
-        Vector4d(curr_cam0_points_undistorted[0].x, curr_cam0_points_undistorted[0].y,
-              curr_cam1_points_undistorted[0].x, curr_cam1_points_undistorted[0].y);
-      }else{
-        map_server[feature.id].observations[state_id] =
+      map_server[feature.id] = Feature(feature.id);
+      map_server[feature.id].observations[state_id] =
         Vector4d(feature.u0, feature.v0,
             feature.u1, feature.v1);
-      }
+    } else {
+      // This is an old feature.
       
+      map_server[feature.id].observations[state_id] =
+      Vector4d(feature.u0, feature.v0,
+          feature.u1, feature.v1);     
       ++tracked_feature_num;
     }
   }
