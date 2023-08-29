@@ -1,77 +1,123 @@
 import numpy as np
-import rospy
-import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 from scipy.spatial.transform import Rotation as R
+from tf.transformations import euler_from_quaternion
+import math
+
+def quaternion_to_euler(q, degree_mode=1):
+    qw, qx, qy, qz = q
+
+    roll = math.atan2(2 * (qw * qx + qy * qz), 1 - 2 * (qx ** 2 + qy ** 2))
+    pitch = math.asin(2 * (qw * qy - qz * qx))
+    yaw = math.atan2(2 * (qw * qz + qx * qy), 1 - 2 * (qy ** 2 + qz ** 2))
+    # degree_mode=1:【输出】是角度制，否则弧度制
+    if degree_mode == 1:
+        roll = np.rad2deg(roll)
+        pitch = np.rad2deg(pitch)
+        yaw = np.rad2deg(yaw)
+    euler = np.array([roll, pitch, yaw])
+    return euler
+
 
 def main():
-    fold = "/home/ldd/msckf_real/src/msckf_vio/backend_result/simulation/enu_noise_w_1_psi_big_median/"
-    gt_file_name = "stamped_groundtruth.txt"
-    esti_file_name = "stamped_traj_estimate.txt"
-    save_name = "backend.png"
-    esti_path = fold + esti_file_name
-    gt_path = fold + gt_file_name
     
-    save_path = fold  + save_name
-    
-    data_gt = np.loadtxt(gt_path, delimiter=' ', skiprows=1)
-    data_esti = np.loadtxt(esti_path, delimiter=' ', skiprows=1)
-    fig, ax = plt.subplots(2, 3)
-    
+    foldpath = "/home/ldd/bias_esti_ws/src/bias_esti/result/msckf/euroc_backend/v203/"
+    gt_path = foldpath + "groundtruth_velocity.txt"
+    esti_path = foldpath + "traj_estimate_velocity.txt"
 
-    end = min(data_gt.shape[0], data_esti.shape[0])
-    
-    
-    # data[:,0] = data[:,0] / 1e9
-    # data[:,8] = data[:,8] / 1e9
-    
-    esti = []
-    gt = []
-    for i in range(end):
-        q = [data_esti[i, 4],data_esti[i, 5], data_esti[i, 6], data_esti[i, 7]]
-        euler = R.from_quat(q).as_euler("xyz", degrees= True)
-        esti.append(np.array([data_esti[i,0], data_esti[i,1], data_esti[i,2], data_esti[i,3], euler[0], euler[1], euler[2]]))
-        
-        q = [data_gt[i, 4], data_gt[i, 5], data_gt[i, 6], data_gt[i, 7]]
-        euler = R.from_quat(q).as_euler("xyz", degrees= True)
-        
-        gt.append(np.array([data_gt[i,0], data_gt[i,1], data_gt[i,2], data_gt[i,3], euler[0], euler[1], euler[2]]))
-        
-    esti = np.array(esti)
-    gt = np.array(gt)
-    
-    ax[0][0].plot(esti[:, 0], esti[:,1], 'b-', label = "esti")
-    ax[0][1].plot(esti[:, 0], esti[:,2], 'b-')
-    ax[0][2].plot(esti[:, 0], esti[:,3], 'b-')
-    
-    ax[1][0].plot(esti[:, 0], esti[:,4], 'b-')
-    ax[1][1].plot(esti[:, 0], esti[:,5], 'b-')
-    ax[1][2].plot(esti[:, 0], esti[:,6], 'b-')
+    save_position_path = foldpath + "position.png"
 
-    ax[0][0].plot(gt[:, 0], gt[:,1], 'r-', label = "opti")
-    ax[0][1].plot(gt[:, 0], gt[:,2], 'r-')
-    ax[0][2].plot(gt[:, 0], gt[:,3], 'r-')
-    
-    ax[1][0].plot(gt[:, 0], gt[:,4], 'r-')
-    ax[1][1].plot(gt[:, 0], gt[:,5], 'r-')
-    ax[1][2].plot(gt[:, 0], gt[:,6], 'r-')
-    
-    ax[0, 0].set_title("position x(m)")
-    ax[0, 1].set_title("position y(m)")
-    ax[0, 2].set_title("position z(m)")
-    ax[1, 0].set_title("roll(deg)")
-    ax[1, 1].set_title("pitch(deg)")
-    ax[1, 2].set_title("yaw(deg)")
+    gt = np.loadtxt(gt_path, delimiter=' ', skiprows=1)
+    esti = np.loadtxt(esti_path, delimiter=' ', skiprows=1)
 
-    fig.legend()
-    fig.tight_layout()
+    # fig = plt.figure()
+    # ax2 = Axes3D(fig)
+    print(gt.shape)
+    eulers = []
+    eulers_gt = []
+    error_pos = []
+    end = min(esti.shape[0], gt.shape[0])
+    # end = 80
+    for i in range(gt.shape[0]):
+        q = [esti[i,4], esti[i,5], esti[i,6], esti[i,7]]
+        # euler = R.from_quat(q).as_euler("xyz", degrees=True)
+        euler = list(euler_from_quaternion(q))
+        if euler[0] > 0:
+                euler[0] -= np.pi
+        else:
+            euler[0] += np.pi
+                
+        # euler = quaternion_to_euler(q)
+        eulers.append(euler)
+        
+        q_gt = [gt[i,4], gt[i,5], gt[i,6], gt[i,7]]
+        # euler_gt = R.from_quat(q_gt).as_euler("xyz", degrees=True)
+        euler_gt = list(euler_from_quaternion(q_gt))
+        if euler_gt[0] > 0:
+                euler_gt[0] -= np.pi
+        else:
+            euler_gt[0] += np.pi
+        eulers_gt.append(euler_gt)
+        
+        error_pos.append(np.array([gt[i,1]-esti[i,1], gt[i,2]-esti[i,2], gt[i,3]-esti[i,3]]))
+        
+    error_pos = np.array(error_pos)
+    error_pos = np.multiply(error_pos, error_pos)
+    error_pos = np.sum(error_pos, axis=1)
+    print(np.sum(np.sqrt(error_pos))/error_pos.shape[0]) 
     
-    plt.savefig(save_path, dpi=300)
+    eulers_gt = np.array(eulers_gt)
+    eulers = np.array(eulers)
+    fig1, ax1 = plt.subplots(3, 3)
+    
+    ax1[0][0].plot(esti[:end,0], esti[:end,1], 'b-', label = 'esti')
+    ax1[0][1].plot(esti[:end,0], esti[:end,2], 'b-', label = 'esti')
+    ax1[0][2].plot(esti[:end,0], esti[:end,3], 'b-', label = 'esti')
+    
+    ax1[1][0].plot(esti[:end,0], eulers[:end,0], 'b-', label = 'esti')
+    ax1[1][1].plot(esti[:end,0], eulers[:end,1], 'b-', label = 'esti')
+    ax1[1][2].plot(esti[:end,0], eulers[:end,2], 'b-', label = 'esti')
+    
+    ax1[2][0].plot(esti[:end,0], esti[:end,8], 'b-', label = 'esti')
+    ax1[2][1].plot(esti[:end,0], esti[:end,9], 'b-', label = 'esti')
+    ax1[2][2].plot(esti[:end,0], esti[:end,10], 'b-', label = 'esti')
+    
+    ax1[0][0].plot(gt[:end,0], gt[:end,1], 'r-', label = 'gt')
+    ax1[0][1].plot(gt[:end,0], gt[:end,2], 'r-', label = 'gt')
+    ax1[0][2].plot(gt[:end,0], gt[:end,3], 'r-', label = 'gt')
+    
+    ax1[1][0].plot(gt[:end,0], eulers_gt[:end,0], 'r-', label = 'gt')
+    ax1[1][1].plot(gt[:end,0], eulers_gt[:end,1], 'r-', label = 'gt')
+    ax1[1][2].plot(gt[:end,0], eulers_gt[:end,2], 'r-', label = 'gt')
+    
+    ax1[2][0].plot(gt[:end,0], gt[:end,8], 'r-', label = 'gt')
+    ax1[2][1].plot(gt[:end,0], gt[:end,9], 'r-', label = 'gt')
+    ax1[2][2].plot(gt[:end,0], gt[:end,10], 'r-', label = 'gt')
+    
+    ax1[0, 0].set_title("position x(m)")
+    ax1[0, 1].set_title("position y(m)")
+    ax1[0, 2].set_title("position z(m)")
+    
+    ax1[1, 0].set_title("roll(rad)")
+    ax1[1, 1].set_title("pitch(rad)")
+    ax1[1, 2].set_title("yaw(rad)")
+    
+    ax1[2, 0].set_title("velocity x(m/s)")
+    ax1[2, 1].set_title("velocity y(m/s)")
+    ax1[2, 2].set_title("velocity z(m/s)")
+    
+    lines, labels = fig1.axes[-1].get_legend_handles_labels()
+    fig1.legend(lines, labels, loc = 'upper right') # 图例的位置
+    # plt.legend()
+    fig1.tight_layout()
+    plt.savefig(save_position_path, dpi=300)
+
     plt.show()
   
     
+
 if __name__ == '__main__':
-    try:
-        main()
-    except rospy.ROSInterruptException:
-        pass
+
+    main()
+    

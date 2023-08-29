@@ -13,12 +13,17 @@ import threading
 
 class Logger:
     def __init__(self):
-        self.fold = "/home/ldd/msckf_real/src/msckf_vio/backend_result/simulation/enu_noise_w_1_psi_big_median/"
+        self.fold = "/home/ldd/bias_esti_ws/src/bias_esti/result/msckf/euroc_backend/v203/"
         self.f_gt = open(self.fold + "stamped_groundtruth.txt", 'w')
+        self.f_gt_vel = open(self.fold + "groundtruth_velocity.txt", 'w')
         self.f_esti = open(self.fold + "stamped_traj_estimate.txt", 'w')
+        self.f_esti_vel = open(self.fold + "traj_estimate_velocity.txt", 'w')
         
         self.gt_pose = []
+        self.gt_vel = []
         self.esti_pose = []
+        self.esti_vel = []
+        
         
         rospy.Subscriber("/firefly_sbx/vio/odom", Odometry, self.esti_Cb)
         rospy.Subscriber("/firefly_sbx/vio/gt_odom", Odometry, self.gt_Cb)
@@ -31,29 +36,63 @@ class Logger:
         
     def write_data(self):
         for data in self.gt_pose:
-            self.f_gt.write(' '.join(data))
-            self.f_gt.write('\r\n')
+            if data[1] != "0.0":
+                self.f_gt.write(' '.join(data))
+                self.f_gt.write('\r\n')
+        
+        for data in self.gt_vel:
+            self.f_gt_vel.write(' '.join(data))
+            self.f_gt_vel.write('\r\n')
             
         for data in self.esti_pose:
             self.f_esti.write(' '.join(data))
             self.f_esti.write('\r\n')
         
+        for data in self.esti_vel:
+            self.f_esti_vel.write(' '.join(data))
+            self.f_esti_vel.write('\r\n')
+        
+        
+        
     def write_title(self):
-        self.f_gt.write("# timestamp tx ty tz qx qy qz qw ")
+        self.f_gt.write("# timestamp tx ty tz qx qy qz qw")
         self.f_gt.write('\r\n')
-        self.f_esti.write("# timestamp tx ty tz qx qy qz qw ")
+        self.f_esti.write("# timestamp tx ty tz qx qy qz qw")
         self.f_esti.write('\r\n')
+        
+        self.f_gt_vel.write("# timestamp tx ty tz qx qy qz qw vx vy vz")
+        self.f_gt_vel.write('\r\n')
+        self.f_esti_vel.write("# timestamp tx ty tz qx qy qz qw vx vy vz")
+        self.f_esti_vel.write('\r\n')
+        
+        
         
     def gt_Cb(self, msg):
         self.gt_pose.append([str(msg.header.stamp.to_sec()), str(msg.pose.pose.position.x), str(msg.pose.pose.position.y),
-            str(msg.pose.pose.position.z), str(msg.pose.pose.orientation.x), str(msg.pose.pose.orientation.y),
-            str(msg.pose.pose.orientation.z), str(msg.pose.pose.orientation.w)])
+            str(msg.pose.pose.position.z), str(msg.pose.pose.orientation.x), 
+            str(msg.pose.pose.orientation.y),str(msg.pose.pose.orientation.z), 
+            str(msg.pose.pose.orientation.w)])
+        
+        self.gt_vel.append([str(msg.header.stamp.to_sec()), str(msg.pose.pose.position.x), str(msg.pose.pose.position.y),
+            str(msg.pose.pose.position.z), str(msg.pose.pose.orientation.x), 
+            str(msg.pose.pose.orientation.y),str(msg.pose.pose.orientation.z), 
+            str(msg.pose.pose.orientation.w), str(msg.twist.twist.linear.x), str(msg.twist.twist.linear.y),
+            str(msg.twist.twist.linear.z)])
+        
     
     def esti_Cb(self, msg):
         self.esti_pose.append([str(msg.header.stamp.to_sec()), str(msg.pose.pose.position.x), str(msg.pose.pose.position.y),
-            str(msg.pose.pose.position.z), str(msg.pose.pose.orientation.x), str(msg.pose.pose.orientation.y),
-            str(msg.pose.pose.orientation.z), str(msg.pose.pose.orientation.w)])
-                     
+            str(msg.pose.pose.position.z), str(msg.pose.pose.orientation.x), 
+            str(msg.pose.pose.orientation.y),str(msg.pose.pose.orientation.z), 
+            str(msg.pose.pose.orientation.w)])
+        
+        self.esti_vel.append([str(msg.header.stamp.to_sec()), str(msg.pose.pose.position.x), str(msg.pose.pose.position.y),
+            str(msg.pose.pose.position.z), str(msg.pose.pose.orientation.x), 
+            str(msg.pose.pose.orientation.y),str(msg.pose.pose.orientation.z), 
+            str(msg.pose.pose.orientation.w), str(msg.twist.twist.linear.x), str(msg.twist.twist.linear.y),
+            str(msg.twist.twist.linear.z)])
+        
+        
 def main():
     print("start record!")
     rospy.init_node('record_node', anonymous=True)
@@ -65,6 +104,7 @@ def main():
     logger.write_data()
     logger.f_gt.close()
     logger.f_esti.close()
+
 
 if __name__ == '__main__':
     try:
