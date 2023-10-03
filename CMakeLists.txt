@@ -52,7 +52,7 @@ find_package(SuiteSparse REQUIRED)
 ##################
 add_message_files(
   FILES
-
+  BiasEstiInfo.msg
   FeatureMeasurement.msg
   CameraMeasurement.msg
   TrackingInfo.msg

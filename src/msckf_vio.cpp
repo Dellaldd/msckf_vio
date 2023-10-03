@@ -305,6 +305,9 @@ bool MsckfVio::createRosIO() {
       &MsckfVio::mocapOdomCallback, this);
   mocap_odom_pub = nh.advertise<nav_msgs::Odometry>("gt_odom", 1);
 
+  esti_info_pub = nh.advertise<BiasEstiInfo>("bias_esti_info", 1);
+
+
   return true;
 }
 
@@ -514,7 +517,7 @@ void MsckfVio::featureCallback(
   // cout << "finish imu process!" << endl;
 
   // Augment the state vector.
-  start_time = ros::Time::now();
+  // start_time = ros::Time::now();
   stateAugmentation(msg->header.stamp.toSec());
   double state_augmentation_time = (
       ros::Time::now()-start_time).toSec();
@@ -522,28 +525,28 @@ void MsckfVio::featureCallback(
 
   // Add new observations for existing features or new
   // features in the map server.
-  start_time = ros::Time::now();
+  // start_time = ros::Time::now();
   addFeatureObservations(msg);
   double add_observations_time = (
       ros::Time::now()-start_time).toSec();
 
   // Perform measurement update if necessary.
-  start_time = ros::Time::now();
+  // start_time = ros::Time::now();
   removeLostFeatures();
   double remove_lost_features_time = (
       ros::Time::now()-start_time).toSec();
 
-  start_time = ros::Time::now();
+  // start_time = ros::Time::now();
   pruneCamStateBuffer();
   double prune_cam_states_time = (
       ros::Time::now()-start_time).toSec();
 
   // Publish the odometry.
-  start_time = ros::Time::now();
+  // start_time = ros::Time::now();
   publish(msg->header.stamp);
   double publish_time = (
       ros::Time::now()-start_time).toSec();
-
+  ROS_INFO("feature callback time: %f", publish_time);
   // Reset the system if necessary.
   onlineReset();
 
@@ -634,7 +637,7 @@ void MsckfVio::mocapOdomCallback(
 void MsckfVio::batchImuProcessing(const double& time_bound) {
   // Counter how many IMU msgs in the buffer are used.
   int used_imu_msg_cntr = 0;
-
+  use_imu_num = 0;
   for (const auto& imu_msg : imu_msg_buffer) {
     double imu_time = imu_msg.header.stamp.toSec();
     if (imu_time < state_server.imu_state.time) {
@@ -656,6 +659,7 @@ void MsckfVio::batchImuProcessing(const double& time_bound) {
     gyro_0 = m_gyro;
     acc_0 = m_acc;
     ++used_imu_msg_cntr;
+    ++use_imu_num;
   }
 
   // Set the state ID for the new IMU state.
@@ -664,7 +668,7 @@ void MsckfVio::batchImuProcessing(const double& time_bound) {
   // Remove all used IMU msgs.
   imu_msg_buffer.erase(imu_msg_buffer.begin(),
       imu_msg_buffer.begin()+used_imu_msg_cntr);
-
+  imu_dataset_size = imu_msg_buffer.size();
   return;
 }
 
@@ -1173,7 +1177,6 @@ void MsckfVio::measurementUpdate(
   state_server.imu_state.velocity += delta_x_imu.segment<3>(6);
   state_server.imu_state.acc_bias += delta_x_imu.segment<3>(9);
   state_server.imu_state.position += delta_x_imu.segment<3>(12);
-  cout << "delta_x: " << delta_x_imu.segment<3>(12) << endl;
   
   const Vector4d dq_extrinsic =
     smallAngleQuaternion(delta_x_imu.segment<3>(15));
@@ -1652,6 +1655,25 @@ void MsckfVio::publish(const ros::Time& time) {
 
   tf::poseEigenToMsg(gt, odom_gt.pose.pose);
   mocap_odom_pub.publish(odom_gt);
+
+  BiasEstiInfo bias_info;
+  bias_info.header.stamp = time;
+  bias_info.header.frame_id = fixed_frame_id;
+
+  bias_info.bias_acc_x = imu_state.acc_bias(0);
+  bias_info.bias_acc_y = imu_state.acc_bias(1);
+  bias_info.bias_acc_z = imu_state.acc_bias(2);
+
+  bias_info.bias_gyro_x = imu_state.gyro_bias(0);
+  bias_info.bias_gyro_y = imu_state.gyro_bias(1);
+  bias_info.bias_gyro_z = imu_state.gyro_bias(2);
+
+  bias_info.use_imu_num = use_imu_num;
+  bias_info.imu_dataset_size = imu_dataset_size;
+  bias_info.imu_measure_id = map_server.size();
+  bias_info.dbias_a = imu_state.acc_bias.norm();
+  bias_info.dbias_w = imu_state.gyro_bias.norm();
+  esti_info_pub.publish(bias_info);
   return;
 }
 

@@ -22,23 +22,25 @@ def quaternion_to_euler(q, degree_mode=1):
 
 def main():
     
-    foldpath = "/home/ldd/bias_esti_ws/src/bias_esti/result/msckf/euroc_backend/v203/"
+    foldpath = "/home/ldd/bias_esti_ws/src/bias_esti/result/msckf/simulation/bias_noise/"
     gt_path = foldpath + "groundtruth_velocity.txt"
     esti_path = foldpath + "traj_estimate_velocity.txt"
-
+    bias_path = foldpath + "bias.txt"
+    
     save_position_path = foldpath + "position.png"
-
+    save_bias_path = foldpath + "bias.png"
+    
     gt = np.loadtxt(gt_path, delimiter=' ', skiprows=1)
     esti = np.loadtxt(esti_path, delimiter=' ', skiprows=1)
-
-    # fig = plt.figure()
-    # ax2 = Axes3D(fig)
+    bias = np.loadtxt(bias_path, delimiter=' ', skiprows=1)
+    
     print(gt.shape)
     eulers = []
     eulers_gt = []
     error_pos = []
+    
     end = min(esti.shape[0], gt.shape[0])
-    # end = 80
+    start = 0
     for i in range(gt.shape[0]):
         q = [esti[i,4], esti[i,5], esti[i,6], esti[i,7]]
         # euler = R.from_quat(q).as_euler("xyz", degrees=True)
@@ -113,6 +115,44 @@ def main():
     fig1.tight_layout()
     plt.savefig(save_position_path, dpi=300)
 
+    fig2, ax2 = plt.subplots(4, 3)
+    ax2[0][0].plot(bias[start:end,0], bias[start:end,1], 'r-')
+    ax2[0][1].plot(bias[start:end,0], bias[start:end,2], 'r-')
+    ax2[0][2].plot(bias[start:end,0], bias[start:end,3], 'r-')
+    
+    ax2[1][0].plot(bias[start:end,0], bias[start:end,4], 'r-')
+    ax2[1][1].plot(bias[start:end,0], bias[start:end,5], 'r-')
+    ax2[1][2].plot(bias[start:end,0], bias[start:end,6], 'r-')
+    
+    ax2[2][0].plot(bias[start:end,0], bias[start:end,7], 'r-')
+    ax2[2][1].plot(bias[start:end,0], bias[start:end,8], 'r-')
+    ax2[2][2].plot(bias[start:end,0], bias[start:end,9], 'r-')
+    
+    ax2[3][0].plot(bias[start:end,0], bias[start:end,10], 'r-')
+    ax2[3][1].plot(bias[start:end,0], bias[start:end,11], 'r-')
+    
+    
+    
+    
+    ax2[0, 0].set_title("acc_x(m^s-2)")
+    ax2[0, 1].set_title("acc_y(m^s-2)")
+    ax2[0, 2].set_title("acc_z(m^s-2)")
+    
+    ax2[1, 0].set_title("gyro_x(rad/s)")
+    ax2[1, 1].set_title("gyro_y(rad/s)")
+    ax2[1, 2].set_title("gyro_z(rad/s)")
+    
+    ax2[2, 0].set_title("imu used to integrate")
+    ax2[2, 1].set_title("imu buffer size")
+    ax2[2, 2].set_title("features used to optimize")
+    
+    ax2[3, 0].set_title("bias_a(m^s-2)")
+    ax2[3, 1].set_title("bias_w(rad/s)")
+    
+    plt.legend()
+    fig2.tight_layout()
+    plt.savefig(save_bias_path, dpi=300)
+    
     plt.show()
   
     

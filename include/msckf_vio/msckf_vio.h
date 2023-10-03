@@ -30,6 +30,7 @@
 #include "cam_state.h"
 #include "feature.hpp"
 #include <msckf_vio/CameraMeasurement.h>
+#include <msckf_vio/BiasEstiInfo.h>
 
 namespace msckf_vio {
 /*
@@ -234,6 +235,7 @@ void initializeGravityAndBias(const sensor_msgs::ImuConstPtr& msg);
     ros::Subscriber feature_sub;
     ros::Publisher odom_pub;
     ros::Publisher feature_pub;
+    ros::Publisher esti_info_pub;
     tf::TransformBroadcaster tf_pub;
     ros::ServiceServer reset_srv;
 
@@ -261,6 +263,7 @@ void initializeGravityAndBias(const sensor_msgs::ImuConstPtr& msg);
     Eigen::Isometry3d mocap_initial_frame, T_imu0_w, T_imu_imu0;
     std::vector<Gt> gt_poses;
     int gt_num = 0, gt_init = 0;
+    int use_imu_num = 0, imu_dataset_size = 0, imu_measure_id = 0;
     Eigen::Vector3d gyro_0, acc_0;
 };
 
