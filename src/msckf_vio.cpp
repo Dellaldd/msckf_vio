@@ -100,6 +100,21 @@ bool MsckfVio::loadParameters() {
         gt_poses.push_back(gt_pose);
       }
     }
+
+    if(gt_type == "euroc_gt"){
+      s_gt = " ";
+      for(int i=1; i<lines_gt.size(); ++i){
+        vec_gt = split_vec(lines_gt[i],s_gt);
+        gt_pose.time = std::stold(vec_gt[0]);
+        gt_pose.p << std::stod(vec_gt[1]), std::stod(vec_gt[2]), std::stod(vec_gt[3]);
+        gt_pose.q.x() = std::stod(vec_gt[5]);
+        gt_pose.q.y() = std::stod(vec_gt[6]);
+        gt_pose.q.z() = std::stod(vec_gt[7]);
+        gt_pose.q.w() = std::stod(vec_gt[4]);
+        gt_pose.vel = Eigen::Vector3d(std::stod(vec_gt[8]), std::stod(vec_gt[9]), std::stod(vec_gt[10]));
+        gt_poses.push_back(gt_pose);
+      }
+    }
     
 
     // euroc v1
@@ -397,14 +412,21 @@ void MsckfVio::initializeGravityAndBias(const sensor_msgs::ImuConstPtr& msg) {
 
   double time = msg->header.stamp.toSec();
   
-  while(gt_num < gt_poses.size()){
-        if (gt_poses[gt_num].time < time){
-            gt_num ++;
-        }else{
-            break;
-        }   
-    }
-    gt_init = gt_num; 
+  // while(gt_num < gt_poses.size()){
+  //       if (gt_poses[gt_num].time < time){
+  //           gt_num ++;
+  //       }else{
+  //           break;
+  //       }   
+  // }
+
+  if(gt_poses[gt_num].time > msg->header.stamp.toSec())
+      return;
+    
+  while(gt_poses[gt_num].time < msg->header.stamp.toSec())
+    gt_num ++;
+
+  gt_init = gt_num; 
   
   state_server.imu_state.time = gt_poses[gt_init].time;
   cout << "gt_init: " << gt_init << endl;
