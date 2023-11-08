@@ -423,6 +423,7 @@ bool Feature::initializePosition(
       pose.linear()*final_position + pose.translation();
     if (position(2) <= 0) {
       is_valid_solution = false;
+      std::cout << "invalid solution! " << std::endl;
       break;
     }
   }

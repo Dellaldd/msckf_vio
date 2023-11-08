@@ -14,7 +14,7 @@ from msckf_vio.msg import BiasEstiInfo
 
 class Logger:
     def __init__(self):
-        self.fold = "/home/ldd/bias_esti_ws/src/bias_esti/result/msckf/real/10_07_1/"
+        self.fold = "/home/ldd/bias_esti_ws/src/bias_esti/result/msckf/simulation/feature_noise/big_noise/"
         self.f_gt = open(self.fold + "stamped_groundtruth.txt", 'w')
         self.f_gt_vel = open(self.fold + "groundtruth_velocity.txt", 'w')
         self.f_esti = open(self.fold + "stamped_traj_estimate.txt", 'w')

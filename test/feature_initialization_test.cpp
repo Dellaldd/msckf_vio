@@ -153,10 +153,11 @@ TEST(FeatureInitializeTest, sphereDistribution) {
   for (int i = 0; i < num; ++i) {
     Isometry3d cam_pose_inv = cam_poses[i].inverse();// R_w_c
     Vector3d p = cam_pose_inv.linear()*feature + cam_pose_inv.translation();//pc
-    // double u = p(0) / p(2) + noise_generator.gaussian(0.0, 0.01);
-    // double v = p(1) / p(2) + noise_generator.gaussian(0.0, 0.01);
-    double u = p(0) / p(2);
-    double v = p(1) / p(2);
+    
+    double u = p(0) / p(2) + noise_generator.gaussian(0.0, 0.001);
+    double v = p(1) / p(2) + noise_generator.gaussian(0.0, 0.001);
+    // double u = p(0) / p(2);
+    // double v = p(1) / p(2);
     Vector3d pc = intrinsics0 * p;
     features.push_back(cv::Point2d(pc(0)/pc(2), pc(1)/pc(2)));
     
@@ -224,18 +225,6 @@ TEST(FeatureInitializeTest, sphereDistribution) {
   //orb-slam
   cv::Mat A = cv::Mat_<double>(4, 4);
   cv::Mat x;
-  
-  // x = features[0].x*P0.row(2)-P0.row(0);
-  // x.copyTo(A.row(0));
-
-  // x = features[0].y*P0.row(2)-P0.row(1);
-  // x.copyTo(A.row(1));
-  
-  // x = features[1].x*P1.row(2)-P1.row(0);
-  // x.copyTo(A.row(2));
-
-  // x = features[1].y*P1.row(2)-P1.row(1);
-  // x.copyTo(A.row(3));
 
   x = feature_uv(0) * P0.row(2)-P0.row(0);
   x.copyTo(A.row(0));

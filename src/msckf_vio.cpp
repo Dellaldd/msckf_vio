@@ -66,7 +66,7 @@ bool MsckfVio::loadParameters() {
 
     // gravity
     if(gt_type == "simulation"){
-      IMUState::gravity = Vector3d(0, 0, -9.8);
+      IMUState::gravity = Vector3d(0, 0, -9.81);
     }else{
       IMUState::gravity = Vector3d(0, 0, -9.81);
     }
@@ -411,14 +411,6 @@ void MsckfVio::initializeGravityAndBias(const sensor_msgs::ImuConstPtr& msg) {
   //   rotationToQuaternion(q0_i_w.toRotationMatrix().transpose());
 
   double time = msg->header.stamp.toSec();
-  
-  // while(gt_num < gt_poses.size()){
-  //       if (gt_poses[gt_num].time < time){
-  //           gt_num ++;
-  //       }else{
-  //           break;
-  //       }   
-  // }
 
   if(gt_poses[gt_num].time > msg->header.stamp.toSec())
       return;
@@ -435,6 +427,7 @@ void MsckfVio::initializeGravityAndBias(const sensor_msgs::ImuConstPtr& msg) {
     rotationToQuaternion(gt_poses[gt_init].q.toRotationMatrix().cast<double>().transpose()); //T_w_imu
   state_server.imu_state.position = gt_poses[gt_init].p.cast<double>(); //p_imu_w
   state_server.imu_state.velocity = gt_poses[gt_init].vel.cast<double>();
+  
   return;
 }
 
@@ -568,7 +561,7 @@ void MsckfVio::featureCallback(
   publish(msg->header.stamp);
   double publish_time = (
       ros::Time::now()-start_time).toSec();
-  ROS_INFO("feature callback time: %f", publish_time);
+  // ROS_INFO("feature callback time: %f", publish_time);
   // Reset the system if necessary.
   onlineReset();
 
@@ -966,7 +959,17 @@ void MsckfVio::undistortPoints(
 
 void MsckfVio::addFeatureObservations(
     const CameraMeasurementConstPtr& msg) {
+  Eigen::Matrix3d intrinsics0, intrinsics1;
+  if(gt_type == "simulation"){
+    intrinsics0 << cam0_intrinsics[0], 0.0, cam0_intrinsics[2], 
+    0.0, cam0_intrinsics[1], cam0_intrinsics[3], 
+    0.0, 0.0, 1.0; 
 
+    intrinsics1 << cam1_intrinsics[0], 0.0, cam1_intrinsics[2], 
+    0.0, cam1_intrinsics[1], cam1_intrinsics[3], 
+    0.0, 0.0, 1.0; 
+  }
+  
   StateIDType state_id = state_server.imu_state.id;
   int curr_feature_num = map_server.size();
   int tracked_feature_num = 0;
@@ -976,17 +979,43 @@ void MsckfVio::addFeatureObservations(
   for (const auto& feature : msg->features) {
     if (map_server.find(feature.id) == map_server.end()) {
       // This is a new feature.
-      
+      Eigen::Vector3d pc0(feature.u0, feature.v0, 1);
+      Eigen::Vector3d pc1(feature.u1, feature.v1, 1);
+
+      Eigen::Vector3d p0 = intrinsics0.inverse() * pc0;
+      Eigen::Vector3d p1 = intrinsics1.inverse() * pc1;
+
       map_server[feature.id] = Feature(feature.id);
-      map_server[feature.id].observations[state_id] =
-        Vector4d(feature.u0, feature.v0,
-            feature.u1, feature.v1);
+      if(gt_type == "simulation"){
+        map_server[feature.id].observations[state_id] =
+          Vector4d(p0[0]/p0[2], p0[1]/p0[2],
+              p1[0]/p1[2], p1[1]/p1[2]);
+      }else{
+        map_server[feature.id].observations[state_id] =
+          Vector4d(feature.u0, feature.v0,
+              feature.u1, feature.v1);
+      }
+      
     } else {
       // This is an old feature.
-      
-      map_server[feature.id].observations[state_id] =
-      Vector4d(feature.u0, feature.v0,
-          feature.u1, feature.v1);     
+      Eigen::Vector3d pc0(feature.u0, feature.v0, 1);
+      Eigen::Vector3d pc1(feature.u1, feature.v1, 1);
+
+      Eigen::Vector3d p0 = intrinsics0.inverse() * pc0;
+      Eigen::Vector3d p1 = intrinsics1.inverse() * pc1;
+
+      if(gt_type == "simulation"){
+        map_server[feature.id].observations[state_id] =
+          Vector4d(p0[0]/p0[2], p0[1]/p0[2],
+              p1[0]/p1[2], p1[1]/p1[2]);
+        cout << feature.v0 << " "<< map_server[feature.id].observations[state_id].transpose() << endl;
+      }else{
+        map_server[feature.id].observations[state_id] =
+          Vector4d(feature.u0, feature.v0,
+              feature.u1, feature.v1);
+      }
+
+           
       ++tracked_feature_num;
     }
   }
